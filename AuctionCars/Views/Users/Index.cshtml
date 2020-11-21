@@ -1,0 +1,21 @@
+﻿@{
+    ViewData["Title"] = "Пользователи";
+}
+
+@model IEnumerable<Data.User>
+@inject IViewLocalizer Localizer
+
+<h2 class="form-header">@Localizer["UsersList"]</h2>
+
+<table class="form-body" cellspacing="0">
+    <tr class="table-users-header"><th>@Localizer["User"]</th><th>@Localizer["Email"]</th><th>@Localizer["RegistrationDate"]</th></tr>
+    @foreach (var user in Model)
+    {
+        <tr class="table-users-row">
+            
+            <td><obj-link class="object-link" obj="@user"></obj-link></td>
+            <td>@user.Email</td>
+            <td>@user.Registration</td>
+        </tr>
+    }
+</table>

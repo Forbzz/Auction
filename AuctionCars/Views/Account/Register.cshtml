@@ -1,0 +1,32 @@
+﻿@model AuctionCars.ViewModel.RegistrationViewModel
+@inject IViewLocalizer Localizer
+
+
+<h2 class="form-header">@Localizer["Registration"]</h2>
+<form class="form-body" method="post" asp-action="Register" asp-controller="Account">
+    <div asp-validation-summary="ModelOnly"></div>
+    <div class="form-input">
+        <label asp-for="Name">@Localizer["UserName"]</label><br />
+        <input asp-for="Name" />
+        <span asp-validation-for="Name"></span>
+    </div>
+    <div class="form-input">
+        <label asp-for="Email">@Localizer["Email"]</label><br />
+        <input asp-for="Email" />
+        <span asp-validation-for="Email"></span>
+    </div>
+
+    <div class="form-input">
+        <label asp-for="Password">@Localizer["Password"]</label><br />
+        <input asp-for="Password" />
+        <span asp-validation-for="Password"></span>
+    </div>
+    <div class="form-input">
+        <label asp-for="PassowrdConfirm">@Localizer["PasswordConfirmation"]</label><br />
+        <input asp-for="PassowrdConfirm" />
+        <span asp-validation-for="PassowrdConfirm"></span>
+    </div>
+    <div class="form-button">
+        <input class="action-link-default lower-button" type="submit" value="@Localizer["SignUp"]" />
+    </div>
+</form>

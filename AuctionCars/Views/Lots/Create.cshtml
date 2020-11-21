@@ -1,0 +1,107 @@
+﻿@model CreateLotViewModel
+@inject IViewLocalizer Localizer
+
+
+
+<h2 class="form-header">@Localizer["LotCreation"]</h2>
+<form class="form-body" asp-controller="Lots" asp-action="Create" enctype="multipart/form-data">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="form-input">
+        <label asp-for="Name">@Localizer["Name"]</label><br />
+        <input asp-for="Name" />
+    </div>
+
+    <div class="form-input">
+        <label asp-for="Year">@Localizer["IssueYear"]</label><br />
+        <input asp-for="Year" type="number" />
+    </div>
+    <div class="form-input">
+        <label asp-for="EngineVolume">@Localizer["EngineVolume"]</label><br />
+        <input asp-for="EngineVolume" type="text"/>
+        <span></span>
+    </div>
+    <div class="form-input">
+        <label asp-for="Milleage">@Localizer["Milleage"]</label><br />
+        <input asp-for="Milleage" type="number" />
+    </div>
+    <div class="form-input">
+        <label asp-for="Price">@Localizer["StartPrice"]</label><br />
+        <input asp-for="Price" type="number" />
+    </div>
+    <div class="form-input">
+        <label asp-for="Transmission">@Localizer["Transmission"]</label><br />
+        <select asp-for="Transmission">
+            @foreach (var item in transmission)
+            {
+                <option value=@item>@item</option>
+
+            }
+
+        </select>
+    </div>
+    <div class="form-input">
+        <label asp-for="Fuel">@Localizer["Fuel"]</label><br />
+        <select asp-for="Fuel">
+            @foreach (var item in fuel)
+            {
+                <option value=@item>@item</option>
+            }
+        </select>
+    </div>
+    <div class="form-input">
+        <label asp-for="Body">@Localizer["Body"]</label><br />
+        <select asp-for="Body">
+            @foreach (var item in body)
+            {
+                <option value=@item>@item</option>
+            }
+        </select>
+    </div>
+    <div class="form-input">
+        <label asp-for="Drive">@Localizer["Drive"]</label><br />
+        <select asp-for="Drive">
+            @foreach (var item in drive)
+            {
+                <option value=@item>@item</option>
+            }
+        </select>
+    </div>
+    <div class="form-input">
+        <label asp-for="Desc">@Localizer["Description"]</label><br />
+        <textarea asp-for="Desc"></textarea>
+    </div>
+    <div class="form-input">
+        <label asp-for="Duration">@Localizer["Duration"]</label><br />
+        <input asp-for="Duration" type="number" />
+    </div>
+    <div class="form-input">
+        <label asp-for="Image">@Localizer["Image"]</label><br />
+
+        <div style="display: flex;">
+            <label class="input-file">
+                @Localizer["Choose"]
+                <input asp-for="Image"  accept=".jpg,.png,.jpeg" />
+            </label>
+            <label id="path" style="margin-left: 5px;margin-top: 2px;"></label>
+        </div>
+
+    </div>
+    <div class="form-button">
+        <input class="action-link-default" type="submit" value="@Localizer["Add"]" /><br />
+    </div>
+</form>
+
+<script>
+
+
+    $(document).ready(function () {
+        $('input[type=file]').change(function () {
+            console.log(document.getElementById('Image').value);
+            var path = document.getElementById('Image').value;
+            $('#path').text(path.substring(12));
+        });
+    });
+
+
+
+</script>

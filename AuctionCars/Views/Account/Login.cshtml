@@ -1,0 +1,80 @@
+﻿@model LoginViewModel
+@inject IViewLocalizer Localizer
+
+<h2 class="form-header">@Localizer["Authorization"]</h2>
+
+<link rel="stylesheet" href="~/css/site.css" />
+<link rel="stylesheet" href="~/css/styles.css" />
+
+<div class="row">
+
+
+    <div class="col-md-12">
+        <form class="form-body" method="post" asp-action="Login" asp-controller="Account">
+            <div asp-validation-summary="ModelOnly"></div>
+            <div class="form-input">
+                <label asp-for="Email">@Localizer["Email"]</label><br />
+                <input asp-for="Email" type="text" />
+                <span asp-validation-for="Email"></span>
+            </div>
+
+            <div class="form-input">
+                <label asp-for="Password">@Localizer["Password"]</label><br />
+                <input asp-for="Password" type="password" />
+                <span asp-validation-for="Password"></span>
+            </div>
+
+            <div class="form-input">
+                <label>
+                    @Localizer["Remember"]
+                    <input class="checkbox" style="margin-left: -7px;" asp-for="Remember" type="checkbox" />
+                </label>
+            </div>
+
+            <div class="form-button">
+                <input class="action-link-default lower-button" type="submit" value="Войти" />
+            </div>
+        </form>
+    </div>
+
+    <div class="col-md-8">
+
+        @{
+        if(Model.ExtrernalLogins != null)
+        {
+            if (Model.ExtrernalLogins.Count == 0) { }
+
+            else
+            {
+                <form class="form-body" style="margin-top:10px;" method="post" asp-action="ExternalLogin">
+                    <div>
+                        @foreach (var prodiver in Model.ExtrernalLogins)
+                        {
+
+                            <button type="submit" class="action-link-default lower-button" name="provider" value="@prodiver.Name" title="Log in using your @prodiver.DisplayName account">
+                                @if(prodiver.DisplayName == "Google")
+                                {
+                                    <img src="~/images/google.png" width="32" height="32" />
+                                }
+                                @if(prodiver.DisplayName == "Facebook")
+                                {
+                                    <img src="~/images/fb.jpg" width="32" height="32" />
+                                    
+                                }
+
+                            </button>
+                        }
+                    </div>
+                    <div class="g-signin2" data-onsuccess="onSignIn"></div>
+
+
+                </form>
+            }
+        }
+          }
+
+
+
+    </div>
+
+</div>

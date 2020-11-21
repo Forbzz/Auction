@@ -1,0 +1,9 @@
+﻿@*@model IEnumerable<Data.CarLot>
+
+<div class="listing">
+    @{foreach (var lot in Model)
+        {
+          @await Html.PartialAsync("_LotsList", lot) 
+        } 
+    }
+</div>*@

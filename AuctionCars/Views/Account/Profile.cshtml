@@ -1,0 +1,222 @@
+﻿@model ProfileViewModel
+@using Microsoft.AspNetCore.Identity
+@inject IViewLocalizer Localizer
+@inject UserManager<Data.User> UserManager
+
+
+
+@{ var selected = UserManager.FindByIdAsync(Model.user.Id);
+    var roles = UserManager.GetRolesAsync(selected.Result);}
+
+
+
+
+<div id="profile-body">
+    <div class="lot-short-desc">
+        <table cellspacing="5">
+            <tr>
+                @if (roles.Result.Contains("moderator"))
+                {
+                    <td class="desc-table-title">@Localizer["UserName"] (@Localizer["Moderator"]):</td>
+                }
+                else
+                {
+                    <td class="desc-table-title">@Localizer["UserName"]:</td>
+                }
+                <td class="desc-table-content">@Model.user.UserName</td>
+
+            </tr>
+            <tr>
+                <td class="desc-table-title">@Localizer["Email"]:</td>
+                <td class="desc-table-content">@Model.user.Email</td>
+            </tr>
+            <tr>
+                <td class="desc-table-title">@Localizer["Registered"]:</td>
+                <td class="desc-table-content">@Model.user.Registration</td>
+            </tr>
+
+            @if (Model.isMe)
+            {
+                <tr>
+                    <td class="desc-table-title"><a class="action-link-default" style="margin-top:15px;" asp-controller="Account" asp-action="ChangePassword">@Localizer["ChangePassword"]</a></td>
+                </tr>
+            }
+            else
+            {
+                if (User.IsInRole("admin"))
+                {
+                    if (roles.Result.Contains("moderator"))
+                    {
+                        <tr>
+                            <td class="desc-table-title">
+                                <a class="button-delete" style="margin-top:15px;" asp-controller="Roles" asp-action="RemoveModerator" asp-route-id="@Model.user.Id">@Localizer["RemoveRole"]</a>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        <tr>
+                            <td class="desc-table-title">
+                                <a class="action-link-default" style="margin-top:15px;" asp-controller="Roles" asp-action="SetModerator" asp-route-id="@Model.user.Id">@Localizer["AddRole"]</a>
+                            </td>
+                        </tr>
+                    }
+
+
+
+                }
+            }
+            @if (!Model.isMe && User.IsInRole("admin"))
+            {
+                <tr>
+                    <td class="desc-table-title">
+                        <a class="button-delete" style="margin-top:15px;" asp-controller="Account" asp-action="DeleteUser" asp-route-id="@Model.user.Id">@Localizer["Delete"]</a>
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+
+    <div class="profile-tabs-panel">
+
+        <div class="profile-tabs">
+            <button id="bidsButton" class="tab tab-active action-link-default btn btn-default" onclick="bidsButtonClicked();">@Localizer["Bets"]</button>
+            <button id="expodedLotsButton" class="tab action-link-default btn btn-default" onclick="expodedLotsButtonClicked();">@Localizer["ExpodedLots"]</button>
+            <button id="wonLotsButton" class="tab action-link-default btn btn-default" onclick="wonLotsButtonClicked();">@Localizer["WonLots"]</button>
+        </div>
+        <div class="profile-table-space">
+            <table cellspacing="0" cellpadding="4" id="bidsTable">
+                <tr class="table-header">
+                    <th>@Localizer["Lot"]</th>
+                    <th>@Localizer["BetAmount"]</th>
+                    <th>@Localizer["Time"]</th>
+                </tr>
+                @if (Model.user.Bets.Count > 0)
+                {
+                    foreach (var bet in Model.user.Bets.OrderByDescending(b => b.Time))
+                    {
+                        <tr class="table-row">
+                            <td><car class="object-link" obj=@bet.CarLot></car></td>
+                            <td>@bet.NewPrice</td>
+                            <td>@bet.Time</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr class="table-null">
+                        <td colspan="3">@Localizer["NoBets"]</td>
+                    </tr>
+                }
+            </table>
+            <table cellspacing="0" cellpadding="4" id="expodedLotsTable" style="display:none">
+                <tr class="table-header">
+                    <th>@Localizer["Name"]</th>
+                    <th>@Localizer["Price"]</th>
+                    <th>@Localizer["Ending"]</th>
+                </tr>
+                @if (Model.user.CarLots.Count > 0)
+                {
+                    foreach (var lot in Model.user.CarLots.OrderByDescending(l => l.Ending))
+                    {
+                        <tr class="table-row">
+                            <td><car class="object-link" obj=@lot></car></td>
+                            @if(lot.Applyed == false)
+                            {
+                                <td>@Localizer["Moderation"]</td>
+                            }
+                            else if (lot.Price == 0 || lot.Price == lot.StartPrice)
+                            {
+                                <td>@Localizer["ExpiredLots"]</td>
+                            }
+                            else
+                            {
+                                <td>@lot.Price</td>
+                            }
+
+                            <td>@lot.Ending</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr class="table-null">
+                        <td colspan="3">@Localizer["NoLots"]</td>
+                    </tr>
+                }
+
+            </table>
+            <table cellspacing="0" cellpadding="4" id="wonLotsTable" style="display:none">
+                <tr class="table-header">
+                    <th>@Localizer["Name"]</th>
+                    <th>@Localizer["Price"]</th>
+                    <th>@Localizer["Ending"]</th>
+                </tr>
+                @{ List<Data.CarLot> lots = Model.user.Bets.OrderByDescending(b => b.Time).Select(b => b.CarLot).Distinct().ToList();
+                    bool winSmth = false;
+                    foreach (Data.CarLot lot in lots)
+                    {
+                        if (Model.user == lot.Bets.OrderByDescending(b => b.Time).First().User && !lot.IsActual())
+                        {
+                            winSmth = true;
+                            <tr class="table-row">
+                                <td><car class="object-link" obj=@lot></car></td>
+                                <td>@lot.Price</td>
+                                <td>@lot.Ending</td>
+                            </tr>
+                        }
+                    }
+                    if (!winSmth)
+                    {
+                        <tr class="table-null">
+                            <td colspan="3">@Localizer["NoLots"]</td>
+                        </tr>
+                    }
+                }
+            </table>
+        </div>
+
+
+    </div>
+</div>
+
+
+@section Scripts
+{
+    <script type="text/javascript">
+        var bidsButton = document.getElementById('bidsButton');
+        var expodedLotsButton = document.getElementById('expodedLotsButton');
+        var wonLotsButton = document.getElementById('wonLotsButton');
+
+        var bidsTable = document.getElementById('bidsTable');
+        var expodedLotsTable = document.getElementById('expodedLotsTable');
+        var wonLotsTable = document.getElementById('wonLotsTable');
+
+        function bidsButtonClicked() {
+            bidsTable.style.display = 'inline-table';
+            expodedLotsTable.style.display = 'none';
+            wonLotsTable.style.display = 'none';
+            bidsButton.className = 'tab tab-active action-link-default btn btn-default';
+            expodedLotsButton.className = 'tab action-link-default btn btn-default';
+            wonLotsButton.className = 'tab action-link-default btn btn-default';
+        }
+
+        function expodedLotsButtonClicked() {
+            bidsTable.style.display = 'none';
+            expodedLotsTable.style.display = 'inline-table';
+            wonLotsTable.style.display = 'none';
+            bidsButton.className = 'tab action-link-default btn btn-default';
+            expodedLotsButton.className = 'tab tab-active action-link-default btn btn-default';
+            wonLotsButton.className = 'tab action-link-default btn btn-default';
+        }
+
+        function wonLotsButtonClicked() {
+            bidsTable.style.display = 'none';
+            expodedLotsTable.style.display = 'none';
+            wonLotsTable.style.display = 'inline-table';
+            bidsButton.className = 'tab action-link-default btn btn-default';
+            expodedLotsButton.className = 'tab action-link-default btn btn-default';
+            wonLotsButton.className = 'tab tab-active action-link-default btn btn-default';
+        }
+    </script>
+}

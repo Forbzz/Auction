@@ -1,0 +1,75 @@
+﻿@*@using Microsoft.AspNetCore.Identity
+
+@model Data.CarLot
+@inject UserManager<Data.User> UserManager
+
+
+
+@{ var u = UserManager.Users.ToList(); }
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col col-12" style="margin-top: 15px;">
+            <br />
+
+            <hr />
+        </div>
+    </div>
+    @{ 
+        if(Model.Comments != null)
+        {
+            foreach (var m in Model.Comments.Reverse())
+            {
+                 
+            <div class="row justify-content-center">
+
+                <div class="col col-7">
+                    <b>@m.User.UserName</b>
+                    <p>@m.Content</p>
+                    <p>Кол-во лайков: @m.Likes.Count()</p>
+                </div>
+                <div class="col col-1">
+
+
+                    @if ((m.User == await UserManager.GetUserAsync(principal: User) && m.User != null) || User.IsInRole("admin") || User.IsInRole("moderator"))
+                    {
+                        if (Model.IsActual())
+                        {
+
+                            <form asp-controller="Lots" asp-action="DeleteComment" asp-route-id="@m.Id">
+
+                                <button type="submit" class="close">&times;</button>
+                            </form>
+
+                        }
+                    }
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        if (Model.IsActual())
+                        {
+                            <form asp-controller="Lots" asp-action="AddLike" asp-route-id="@m.Id">
+                                <button type="submit" class="alert-success">&hearts;</button>
+
+                            </form>
+
+                        }
+                    }
+                </div>
+            </div>
+         }
+        }
+        
+     }
+</div>*@
+
+
+@*@model Data.CarLot*@
+@model IEnumerable<Data.Comments>
+
+<div class="listing">
+    @{foreach (var lot in Model.Reverse())
+        {
+            @await Html.PartialAsync("Comments", lot) 
+        } 
+     }
+</div>

@@ -1,0 +1,273 @@
+﻿@model LotDetailtViewModel
+@inject IViewLocalizer Localizer
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.AspNetCore.Localization
+
+<div class="lot-body">
+    <div class="lot-header">
+        <div class="lot-header-name">@Model.Lot.Car.Name</div>
+        @if (Model.Lot.IsActual())
+        {
+            <div class="lot-header-time">@Localizer["Left"]: @await Component.InvokeAsync("Timer", new { lot = Model.Lot, localizer = Localizer }) </div>
+
+        }
+
+    </div>
+    <br />
+    <div class="lot-main">
+        <div class="lot-image">
+            <a href="@(Model.Lot.Car.Image)">
+                <img src="@Model.Lot.Car.Image" alt="@Model.Lot.Car.Name" width="480" height="360" />
+            </a>
+        </div>
+        <div class="lot-short-desc">
+            <table id="lot-table-left">
+                <tr>
+                    <td class="lot-table-title">@Localizer["IssueYear"]:</td>
+                    <td class="lot-table-data">@Model.Lot.Car.Year</td>
+                </tr>
+                <tr>
+                    <td class="lot-table-title">@Localizer["EngineVolume"]:</td>
+                    <td class="lot-table-data">@Model.Lot.Car.EngineVolume @Localizer["liter"].</td>
+                </tr>
+                <tr>
+                    <td class="lot-table-title">@Localizer["Transmission"]:</td>
+                    <td class="lot-table-data">@transmission[Model.Lot.Car.Transmission]</td>
+                </tr>
+                <tr>
+                    <td class="lot-table-title">@Localizer["Fuel"]:</td>
+                    <td class="lot-table-data">@fuel[Model.Lot.Car.Fuel]</td>
+                </tr>
+                <tr>
+                    <td class="lot-table-title">@Localizer["Body"]:</td>
+                    <td class="lot-table-data">@body[Model.Lot.Car.Body]</td>
+                </tr>
+                <tr>
+                    <td class="lot-table-title">@Localizer["Drive"]:</td>
+                    <td class="lot-table-data">@drive[Model.Lot.Car.Drive] </td>
+                </tr>
+                <tr>
+                    <td class="lot-table-title">@Localizer["Mileage"]:</td>
+                    <td class="lot-table-data">@Model.Lot.Car.Mileage @Localizer["km"].</td>
+                </tr>
+
+            </table>
+            <table id="lot-table-right">
+                <tr>
+                    <td class="lot-table-title">@Localizer["Owner"]:</td>
+                    <td class="lot-table-data"><user class="object-link" syl="@Model.Lot.User"></user></td>
+
+                </tr>
+                <tr>
+                    <td class="lot-table-title">@Localizer["Price"]:</td>
+                    <td id="priceLabel" class="lot-table-data">@Model.Lot.StartPrice BYN</td>
+                </tr>
+                <tr>
+                    <td class="lot-table-title">@Localizer["Current price"]:</td>
+                    @if (Model.Lot.Price == 0 || Model.Lot.Price == Model.Lot.StartPrice)
+                    {
+                        <td id="priceLabel" class="lot-table-data">--</td>
+                    }
+                    else
+                    {
+                        <td id="startPriceLabel" class="lot-table-data">@Model.Lot.Price BYN</td>
+                    }
+
+                </tr>
+                <tr>
+                    @if (Model.Lot.IsActual())
+                    {
+                        <td class="lot-table-title">@Localizer["Leader"]:</td>
+                        if (Model.Lot.Bets.Any())
+                        {
+                            <td id="leaderLabel" class="lot-table-data"><user class="object-link" syl="@Model.getWinner()"></user></td>
+                        }
+                        else
+                        {
+                            <td class="lot-table-data">--</td>
+                        }
+                    }
+
+                    else
+                    {
+                        <td class="lot-table-title">@Localizer["Winner"]:</td>
+                        @if (Model.Lot.Bets.Any())
+                        {
+                            <td id="leaderLabel" class="lot-table-data"><user class="object-link" syl="@Model.getWinner()"></user></td>
+
+                        }
+                        else
+                        {
+                            <td class="lot-table-data">@Localizer["ExpiredLots"]</td>
+                        }
+                    }
+                </tr>
+
+
+
+            </table>
+
+        </div>
+    </div>
+    <div class="lot-main-desc">
+        <p class="lot-main-desc-title">@Localizer["LotDescription"]:</p>
+        <p class="lot-main-desc-data">@Model.Lot.Car.Desc</p>
+    </div>
+
+    @if(Model.Lot.Applyed == true)
+    { 
+
+    <div class="lot-bets">
+
+
+        <div class="lot-bids-table-div" style="width: inherit;">
+            <p class="lot-main-desc-title">@Localizer["BetsHistory"]:</p>
+            <table id="bidsTable" cellspacing="0" cellpadding="3">
+                <thead>
+                    <tr id="bidsTableHeader" class="table-header">
+                        <th>@Localizer["User"]</th>
+                        <th>@Localizer["NewPrice"]</th>
+                        <th>@Localizer["Time"]</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    @if (Model.Lot.Bets.Count > 0)
+                    {
+                        foreach (var bet in Model.Lot.Bets.OrderByDescending(b => b.Time))
+                        {
+                            <tr class="table-row">
+                                <td><obj-link class="object-link" obj=@bet.User></obj-link></td>
+                                <td>@bet.NewPrice</td>
+                                <td>@bet.Time</td>
+                            </tr> 
+                        }
+                    }
+                    else
+                    {
+                        <tr id="noBets_tr" class="table-null">
+                            <td colspan="4">@Localizer["NoBets"]</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+
+
+        @if (Model.Lot.IsActual() && User.Identity.IsAuthenticated && !User.IsInRole("guest"))
+        {
+            <div class="make-bet-div">
+                <p class="make-bet-title">@Localizer["MakeBet"]:</p>
+                <form asp-action="Bet" asp-controller="Lots">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <input type="hidden" asp-for="BetId" value="@Model.Lot.Id">
+                    <div class="form-input">
+                        <label asp-for="BetPrice" class="control-label">@Localizer["YourBet"]</label>
+                        <input type="number" asp-for="BetPrice" class="form-control" />
+                    </div>
+                    <div class="form-button">
+                        <input class="action-link-default" type="submit" value=@Localizer["Bet"] style="width: 320px;display: block;" onclick="@Model." />
+                    </div>
+                </form>
+                @{ if ((Model.Lot.User.UserName == User.Identity.Name || (User.IsInRole("admin"))) && Model.Lot.IsActual())
+                    {
+                        <div class="form-button">
+                            <a class="button-delete btn btn-block" style="width: 320px;display: block;" asp-controller="Lots" asp-action="Delete" asp-route-id="@Model.Lot.Id">@Localizer["Delete"]</a>
+                        </div>
+                    }
+                }
+
+            </div>
+        }
+
+
+
+    </div>
+    <div class="row justify-content-center">
+        <div class="container">
+            <div class="col col-12" style="margin-top:15px;">
+                <h4>@Localizer["Comments"]</h4>
+                <hr />
+            </div>
+            @if (Model.Lot.IsActual() && User.Identity.IsAuthenticated)
+                @await Html.PartialAsync("_CommCreate", new Data.Comments() { CarLotId = Model.Lot.Id })
+        </div>
+    </div>
+
+
+
+    var commentsId = "comments" + Model.Lot.Id;
+    <div class="row justify-content-center" id="@commentsId">
+        @{ await Html.RenderPartialAsync("~/Views/Lots/CommentsList.cshtml", Model.Lot.Comments); }
+    </div>
+
+    }else
+    {
+        if(User.IsInRole("admin") || User.IsInRole("moderator"))
+        {
+        <div class="form-button">
+            <a class="action-link-default" style="width: 320px;display: block;" asp-controller="LotsManager" asp-action="Apply" asp-route-id="@Model.Lot.Id">@Localizer["Apply"]</a>
+        </div>
+
+        <div class="form-button">
+           <a class="button-delete btn btn-block" style="width: 320px;display: block;" asp-controller="LotsManager" asp-action="Decline" asp-route-id="@Model.Lot.Id">@Localizer["Decline"]</a>
+        </div>
+        }
+    }
+
+     
+
+
+</div>
+ </div>
+
+<script src="~/js/signalr.min.js"></script>
+<script>
+    const updateHub = new signalR.HubConnectionBuilder()
+        .withUrl("/updates")
+        .build();
+
+    updateHub.on('UpdateTable', function (lot_id, user_id, user_name, price, time) {
+        var model_id = lot_id;
+        if (model_id == lot_id) {
+            var user_td = document.createElement('td');
+            var user_link = document.createElement('a');
+            user_link.classList.add('object-link');
+            var link_text = document.createTextNode(user_name);
+            user_link.appendChild(link_text);
+            user_link.href = "/Users/Profile/" + user_id;
+            user_td.appendChild(user_link);
+
+            var price_td = document.createElement('td');
+            var price_text = document.createTextNode(price);
+            price_td.appendChild(price_text);
+
+            var date_time = new Date(time);
+            var time_td = document.createElement('td');
+            var time_text = document.createTextNode(date_time.toLocaleString('@(Context.Features.Get<IRequestCultureFeature>().RequestCulture.UICulture.Name)').replace(',', ''));
+            time_td.appendChild(time_text);
+
+            var row = document.createElement('tr');
+            row.append(user_td, price_td, time_td);
+            row.classList.add('table-row');
+            var noBets = document.getElementById('noBets-tr');
+            if (noBets)
+                noBets.parentNode.removeChild(noBets);
+
+            var body = document.getElementById('tableBody');
+            body.insertBefore(row, body.firstChild);
+
+            var leader_label = document.getElementById('leaderLabel');
+            leader_label.removeChild(leader_label.firstChild);
+            leader_label.appendChild(user_link.cloneNode(true));
+
+            var price_label = document.getElementById('startPriceLabel');
+            price_label.removeChild(price_label.firstChild);
+            price_label.appendChild(price_text.cloneNode(true));
+
+        }
+    })
+    updateHub.start();
+</script>
+
+

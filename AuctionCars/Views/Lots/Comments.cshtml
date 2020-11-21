@@ -1,0 +1,57 @@
+﻿@using Microsoft.AspNetCore.Identity
+
+@model Data.Comments
+@inject UserManager<Data.User> UserManager
+@inject IViewLocalizer Localizer
+
+
+@{ var u = UserManager.Users.ToList();
+   var commentsId = "comments" + Model.CarLotId;
+    }
+
+<div class="container">
+    @{ 
+        if(Model != null)
+        {
+                 
+            <div class="row justify-content-center">
+
+                <div class="col col-7">
+                    <b><user syl="@Model.User">@Model.User.UserName</user></b>
+                    <p>@Model.Content</p>
+                    <p>@Localizer["Likes"]: @Model.Likes.Count()</p>
+                </div>
+                <div class="col col-1">
+
+
+                    @if ((Model.User == await UserManager.GetUserAsync(principal: User) && Model.User != null) || User.IsInRole("admin") || User.IsInRole("moderator"))
+                    {
+                        if (Model.CarLot.IsActual())
+                        {
+
+                            <form asp-controller="Lots" asp-action="DeleteComment" asp-route-id="@Model.Id" method="POST" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#@commentsId" enctype="multipart/form-data">
+
+                                <button type="submit" class="close">&times;</button>
+                            </form>
+
+                        }
+                    }
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        if (Model.CarLot.IsActual())
+                        {
+                            <form asp-controller="Lots" asp-action="AddLike" asp-route-id="@Model.Id" method="POST" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#@commentsId" enctype="multipart/form-data">
+                                <button type="submit" class="alert-success">&hearts;</button>
+
+                            </form>
+
+                        }
+                    }
+                </div>
+            </div>
+         //}
+        }
+        
+     }
+</div>
+

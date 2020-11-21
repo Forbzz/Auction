@@ -1,0 +1,23 @@
+﻿@model Data.CarLot
+
+    <div class="listing-item">
+        <div class="listing-item-image">
+            <a asp-controller="Lots" asp-action="Detail" asp-route-id=@Model.Id>
+                <img class="bd-placeholder-img bd-placeholder-img-lg" src=@Model.Car.Image  width="300" height="300" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 500x500"/>
+            </a>
+        </div>
+        <div class="listing-item-main">
+            <div class="col-md-7 order-md-2">
+                <p class="listing-item-main-top"><car class="object-link" obj=@Model></car></p>
+                <p class="listing-item-main-desc">@Model.Car.Desc</p>
+                @if (Model.StartPrice > Model.Price)
+                {
+                    <p class="listing-item-main-price">@Model.StartPrice BYN</p>
+                }
+                else
+                {
+                    <p class="listing-item-main-price">@Model.Price BYN</p>
+                }
+            </div>
+        </div>
+    </div>

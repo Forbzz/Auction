@@ -1,0 +1,24 @@
+﻿@{
+    ViewData["Title"] = "Удаление лота";
+}
+
+@model Data.CarLot
+@inject IViewLocalizer Localizer
+
+<div class="text-center">
+    <h3>@Localizer["Confirm"] @Model.Name</h3>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+
+        <div class="row justify-content-center">
+            <div class="col-2">
+                <input type="submit" value="@Localizer["Yes"]" class="btn btn-danger btn-block" />
+            </div>
+            <div class="col-2">
+                <a class="btn btn-outline-dark  btn-block" asp-action="Detail" asp-route-id="@Model.Id">@Localizer["No"]</a>
+            </div>
+
+        </div>
+    </form>
+</div>
