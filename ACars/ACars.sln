@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30413.136
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACars", "ACars\ACars.csproj", "{B4AEE587-87D9-46DF-A237-006483D2A79E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B4AEE587-87D9-46DF-A237-006483D2A79E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4AEE587-87D9-46DF-A237-006483D2A79E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4AEE587-87D9-46DF-A237-006483D2A79E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4AEE587-87D9-46DF-A237-006483D2A79E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D2F17B94-8589-4581-B023-978B79C2398E}
+	EndGlobalSection
+EndGlobal
