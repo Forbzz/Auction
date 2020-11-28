@@ -36,7 +36,7 @@ namespace Services.Entity
 
         }
 
-        public CarLot GetLotDB(int id)
+        public CarLot GetLotDB(int? id)
         {
             return db.CarLots.Where(x => x.Id == id).FirstOrDefault();   
         }

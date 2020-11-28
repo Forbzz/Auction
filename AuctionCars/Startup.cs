@@ -20,6 +20,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Repo;
+using Services;
 using Services.Abstract;
 using Services.Entity;
 
@@ -50,6 +51,7 @@ namespace AuctionCars
             services.AddTransient<ILikesRepository, LikesRepository>();
             services.AddTransient<ICarRepository, CarRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IEmail, Email>();
 
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services.AddControllersWithViews()

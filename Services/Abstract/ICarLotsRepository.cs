@@ -11,7 +11,7 @@ namespace Services.Abstract
         public void AddLotDB(CarLot lot);
         public IEnumerable<CarLot> AllLots();
         public IEnumerable<CarLot> MyLots(User user);
-        public CarLot GetLotDB(int id);
+        public CarLot GetLotDB(int? id);
         public void UpdateLot(CarLot lot);
         public void DeleteLot(CarLot lot);
         public IEnumerable<CarLot> ActualLot();

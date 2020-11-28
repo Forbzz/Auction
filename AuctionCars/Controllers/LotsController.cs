@@ -34,11 +34,12 @@ namespace AuctionCars.Controllers
         private ILikesRepository likesRepository;
         private IBetPerository betRep;
         private ICommentsRepository commRep;
+        private IEmail Email;
         private IHubContext<UpdateHub> updateHub;
         public static bool actual { get; set; }
         const int pageSize = 4;
 
-        public LotsController(ApplicationContext context, CarData carData, ILogger<LotsController> _logger, IHubContext<UpdateHub> _updateHub, UserManager<User> userManager,ICarRepository carRep, ICommentsRepository comm, IBetPerository rep, IWebHostEnvironment appEnviroment, ICarLotsRepository c, ILikesRepository l)
+        public LotsController(ApplicationContext context, IEmail _Email, CarData carData, ILogger<LotsController> _logger, IHubContext<UpdateHub> _updateHub, UserManager<User> userManager,ICarRepository carRep, ICommentsRepository comm, IBetPerository rep, IWebHostEnvironment appEnviroment, ICarLotsRepository c, ILikesRepository l)
         {
             db = context;
             _userManager = userManager;
@@ -50,6 +51,7 @@ namespace AuctionCars.Controllers
             carRepository = carRep;
             logger = _logger;
             updateHub = _updateHub;
+            Email = _Email;
         }
 
         [HttpGet]
@@ -119,8 +121,18 @@ namespace AuctionCars.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            ViewData["Message"] = "Создать лот";
+            var roles = await _userManager.GetRolesAsync(user);
+            if(roles.Any(r => r == "guest"))
+            {
+                return RedirectToAction("Message");
+            }
+           
 
+            return View();
+        }
+
+        public IActionResult Message()
+        {
             return View();
         }
 
@@ -148,6 +160,8 @@ namespace AuctionCars.Controllers
             return RedirectPermanent("~/Error/Index?statusCode=404");
         }
 
+
+
         [HttpPost]
         public async Task<IActionResult> Create(CreateLotViewModel model)
         {
@@ -166,6 +180,14 @@ namespace AuctionCars.Controllers
                     EngineVolume = double.Parse(model.EngineVolume),
                     Image = null
                 };
+                User user = await _userManager.GetUserAsync(HttpContext.User);
+                bool check = false;
+                var roles = await _userManager.GetRolesAsync(user);
+                if(roles.All(r => r == "admin"))
+                {
+                    check = true;
+                }
+                
 
                 CarLot carLot = new CarLot
                 {
@@ -175,7 +197,8 @@ namespace AuctionCars.Controllers
                     Exposing = DateTime.Now,
                     Ending = DateTime.Now.AddDays(model.Duration),
                     User = await _userManager.GetUserAsync(HttpContext.User),
-                    Car = car
+                    Car = car,
+                    Applyed = check
 
                 };
 
@@ -226,15 +249,14 @@ namespace AuctionCars.Controllers
                 betRep.AddBet(bet);
                 lot.Price = model.BetPrice;
                 carLotsRepository.UpdateLot(lot);
-                
 
+                
                 await updateHub.Clients.AllExcept(user.Id).SendAsync("UpdateTable", lot.Id, bet.User.Id, bet.User.UserName, bet.NewPrice,
                     Convert.ToInt64(bet.Time.ToUniversalTime().Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds));
-                if(lot.Bets.Count > 1 && currentUser.Email != user.Email)
+                if(lot.Bets.Count >= 1 && currentUser.Email != user.Email)
                 {
-
-                    Email email = new Email();
-                    await email.SendEmailAsync(currentUser.Email, "CarLots",
+                    
+                    await Email.SendEmailAsync(currentUser.Email, "CarLots",
                         $"Ваша ставка на товар {lot.Name} была перебита ставкой в {lot.Price} пользователем {user.UserName}");
                 }
 
@@ -261,12 +283,9 @@ namespace AuctionCars.Controllers
         }
 
 
-
-
-
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id)
+        public IActionResult DeleteConfirmed(int? id)
         {
             if(id !=null)
             {
@@ -291,7 +310,6 @@ namespace AuctionCars.Controllers
         public async Task<IActionResult> CreateComment(int pbId, string comment)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            //comment.User = user;
             Comments comm = new Comments
             {
                 CarLotId = pbId,

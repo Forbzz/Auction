@@ -19,7 +19,7 @@ namespace Services.Entity
             betRep = repository;
         }
 
-        public void DeleteBets(int id)
+        public void DeleteBets(int? id)
         {
             db.Bets.RemoveRange(db.Bets.Where(b => b.CarLot.Id == id));
             db.SaveChanges();
@@ -31,10 +31,6 @@ namespace Services.Entity
             db.SaveChanges();
         }
 
-        IEnumerable<Bet> IBetPerository.AllBets()
-        {
-            throw new NotImplementedException();
-        }
 
         void IBetPerository.DeleteBet(Bet bet)
         {
@@ -43,19 +39,7 @@ namespace Services.Entity
             db.SaveChanges();
         }
 
-        Bet IBetPerository.GetBetDB(int id)
-        {
-            throw new NotImplementedException();
-        }
 
-        IEnumerable<Bet> IBetPerository.MyBets(User user)
-        {
-            throw new NotImplementedException();
-        }
 
-        void IBetPerository.UpdateLot(Bet bet)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

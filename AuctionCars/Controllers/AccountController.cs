@@ -25,8 +25,9 @@ namespace AuctionCars.Controllers
         private IUserRepository userRep;
         private ICarLotsRepository carRep;
         private IBetPerository betRep;
+        private IEmail Email;
         private ApplicationContext db;
-        public AccountController(UserManager<User> userManager,ApplicationContext _context, IBetPerository betRerository ,SignInManager<User> signInManager,ICarLotsRepository carRepository ,ILogger<AccountController> _logger, ApplicationContext context, IUserRepository repository)
+        public AccountController(UserManager<User> userManager,ApplicationContext _context, IEmail _Email ,IBetPerository betRerository ,SignInManager<User> signInManager,ICarLotsRepository carRepository ,ILogger<AccountController> _logger, ApplicationContext context, IUserRepository repository)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -35,13 +36,14 @@ namespace AuctionCars.Controllers
             carRep = carRepository;
             db = _context;
             betRep = betRerository;
+            Email = _Email;
         }
 
         [AllowAnonymous]
         [HttpGet] 
         public async Task<IActionResult> LoginAsync(string returnUrl)
          {
-            ViewData["Message"] = "Войти";
+
             LoginViewModel model = new LoginViewModel
             {
                 ReturnUrl = returnUrl,
@@ -143,8 +145,8 @@ namespace AuctionCars.Controllers
                         "Account",
                         new { userId = user.Id, code = code },
                         protocol: HttpContext.Request.Scheme);
-                    Email email = new Email();
-                    await email.SendEmailAsync(model.Email, "Confirm your account",
+                    //Email email = new Email();
+                    await Email.SendEmailAsync(model.Email, "Confirm your account",
                         $"Подтвердите аккаунт, перейдя по ссылке: <a href='{url}'>link</a>");
                    
                     return RedirectToAction("Message"); 
@@ -194,7 +196,8 @@ namespace AuctionCars.Controllers
                 return View("Login", loginViewModel);
             }
 
-            // Get the login information about the user from the external login provider
+            
+            // Получаем информации о пользователе зашедшего через внешнего провайдера
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
@@ -204,8 +207,8 @@ namespace AuctionCars.Controllers
                 return View("Login", loginViewModel);
             }
 
-            // If the user already has a login (i.e if there is a record in AspNetUserLogins
-            // table) then sign-in the user with this external login provider
+            
+            //Если пользователь уже зарегистрирован в приложении, то просто заходим
             var signInResult = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider,
                 info.ProviderKey, isPersistent: true, bypassTwoFactor: true);
 
@@ -368,21 +371,19 @@ namespace AuctionCars.Controllers
                 foreach (Bet bet in userBets)
                 {
                     CarLot stavkiOnCarLotUsera = bet.CarLot;
-                    if(stavkiOnCarLotUsera.IsActual())
-                    {
+                    //if(stavkiOnCarLotUsera.IsActual())
+                    //{
                         if (stavkiOnCarLotUsera.Bets.Count != 0)
                             bet.CarLot.Price = stavkiOnCarLotUsera.Bets.Last().NewPrice;
                         else
                             bet.CarLot.Price = bet.CarLot.StartPrice;
-                    }
+                    //}
                 }
                 
 
-
-
                 foreach (CarLot lot in lots)
                 {
-                    var lastBet = db.Bets.Where(b => b.CarLot.Id == lot.Id).Last();
+                    //var lastBet = db.Bets.Where(b => b.CarLot.Id == lot.Id).Last();
                     string path = "wwwroot/images/" + lot.Id + ".jpg";
                     System.IO.File.Delete(path);
                 }

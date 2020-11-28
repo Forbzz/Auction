@@ -83,7 +83,7 @@ namespace AuctionCars.Controllers
             return RedirectToAction("PreModeration");
         }
 
-        public IActionResult Decline(int id)
+        public IActionResult Decline(int? id)
         {
             if (id != null)
             {
