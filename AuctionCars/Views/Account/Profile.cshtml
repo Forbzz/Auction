@@ -32,8 +32,10 @@
             </tr>
             <tr>
                 <td class="desc-table-title">@Localizer["Registered"]:</td>
-                <td class="desc-table-content">@Model.user.Registration</td>
+                <td class="desc-table-content">@TimeZoneInfo.ConvertTimeFromUtc(Model.user.Registration, TimeZoneInfo.Local)</td>
+
             </tr>
+
 
             @if (Model.isMe)
             {
@@ -98,7 +100,7 @@
                         <tr class="table-row">
                             <td><car class="object-link" obj=@bet.CarLot></car></td>
                             <td>@bet.NewPrice</td>
-                            <td>@bet.Time</td>
+                            <td>@TimeZoneInfo.ConvertTimeFromUtc(bet.Time, TimeZoneInfo.Local)</td>
                         </tr>
                     }
                 }
@@ -134,7 +136,7 @@
                                 <td>@lot.Price</td>
                             }
 
-                            <td>@lot.Ending</td>
+                        <td>@TimeZoneInfo.ConvertTimeFromUtc(lot.Ending, TimeZoneInfo.Local)</td>
                         </tr>
                     }
                 }
@@ -162,7 +164,7 @@
                             <tr class="table-row">
                                 <td><car class="object-link" obj=@lot></car></td>
                                 <td>@lot.Price</td>
-                                <td>@lot.Ending</td>
+                                <td>@TimeZoneInfo.ConvertTimeFromUtc(lot.Ending, TimeZoneInfo.Local)</td>
                             </tr>
                         }
                     }

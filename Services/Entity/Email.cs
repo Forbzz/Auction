@@ -31,5 +31,27 @@ namespace Services
 
             }
         }
+
+        public async Task SendEmail(string email, string subject, string message)
+        {
+            var emailMessage = new MimeMessage();
+
+            emailMessage.From.Add(new MailboxAddress("CarLots", "carlots@mail.ru"));
+            emailMessage.To.Add(new MailboxAddress("", email));
+            emailMessage.Subject = subject;
+            emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+            {
+                Text = message
+            };
+
+            using (var client = new SmtpClient())
+            {
+                client.Connect("smtp.mail.ru", 25, false);
+                client.Authenticate("carlots@mail.ru", "Ss7751876");
+                client.Send(emailMessage);
+                client.Disconnect(true);
+
+            }
+        }
     }
 }

@@ -115,6 +115,10 @@ namespace AuctionCars.Migrations
                     b.Property<int?>("CarId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("Ended")
+                        .HasColumnName("Ended")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("Ending")
                         .HasColumnName("Ending")
                         .HasColumnType("datetime2");
@@ -137,6 +141,10 @@ namespace AuctionCars.Migrations
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("WinnerName")
+                        .HasColumnName("WinnerName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

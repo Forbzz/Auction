@@ -23,7 +23,7 @@ using Repo;
 using Services;
 using Services.Abstract;
 using Services.Entity;
-
+using Hangfire;
 
 
 namespace AuctionCars
@@ -51,13 +51,18 @@ namespace AuctionCars
             services.AddTransient<ILikesRepository, LikesRepository>();
             services.AddTransient<ICarRepository, CarRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
-            services.AddTransient<IEmail, Email>();
+            services.AddSingleton<IEmail, Email>();
+
+            services.AddHangfire(x => x.UseSqlServerStorage(
+                Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services.AddControllersWithViews()
                 .AddViewLocalization()
                 .AddDataAnnotationsLocalization();
             services.AddControllers();
+
+            
                 
 
             var supportedCultures = new[]
@@ -81,7 +86,7 @@ namespace AuctionCars
 
             
             
-
+            
 
 
 
@@ -137,9 +142,11 @@ namespace AuctionCars
             app.UseAuthorization();
             app.UseAuthentication();
             app.UseCookiePolicy();
+            app.UseHangfireServer();
+            app.UseHangfireDashboard();
 
-            
-
+            app.UseHangfireServer();
+            app.UseHangfireDashboard();
 
             app.UseEndpoints(endpoints =>
             {

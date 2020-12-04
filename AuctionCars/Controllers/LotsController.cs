@@ -20,6 +20,8 @@ using Services;
 using Microsoft.AspNetCore.SignalR;
 using AuctionCars.Hubs;
 using Newtonsoft.Json;
+using Hangfire;
+using AuctionCars.Helper;
 
 namespace AuctionCars.Controllers
 {
@@ -54,9 +56,12 @@ namespace AuctionCars.Controllers
             Email = _Email;
         }
 
+       
+
         [HttpGet]
         public ActionResult Actual(int? id)
         {
+            RecurringJob.AddOrUpdate<EmailEndLotSending>(x => x.CheckLot(), Cron.Minutely);
             actual = true;
             int page = id ?? 0;
             if (HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
@@ -183,7 +188,7 @@ namespace AuctionCars.Controllers
                 User user = await _userManager.GetUserAsync(HttpContext.User);
                 bool check = false;
                 var roles = await _userManager.GetRolesAsync(user);
-                if(roles.All(r => r == "admin"))
+                if(roles.Any(r => r == "admin"))
                 {
                     check = true;
                 }
@@ -194,8 +199,8 @@ namespace AuctionCars.Controllers
                     Name = model.Name,
                     StartPrice = model.Price,
                     Price = model.Price,
-                    Exposing = DateTime.Now,
-                    Ending = DateTime.Now.AddDays(model.Duration),
+                    Exposing = DateTime.UtcNow,
+                    Ending = DateTime.UtcNow.AddDays(model.Duration),
                     User = await _userManager.GetUserAsync(HttpContext.User),
                     Car = car,
                     Applyed = check
@@ -242,18 +247,20 @@ namespace AuctionCars.Controllers
                     User = user,
                     NewPrice = model.BetPrice,
                     CarLot = lot,
-                    Time = DateTime.Now
+                    Time = DateTime.Now.ToUniversalTime()
                 };
+                lot.WinnerName = user.UserName;
                 if (lot.Bets.Count > 1)
                     currentUser = lot.Bets.Last().User;
                 betRep.AddBet(bet);
                 lot.Price = model.BetPrice;
                 carLotsRepository.UpdateLot(lot);
 
-                
-                await updateHub.Clients.AllExcept(user.Id).SendAsync("UpdateTable", lot.Id, bet.User.Id, bet.User.UserName, bet.NewPrice,
-                    Convert.ToInt64(bet.Time.ToUniversalTime().Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds));
-                if(lot.Bets.Count >= 1 && currentUser.Email != user.Email)
+                ///////
+                await updateHub.Clients.Group(lot.Id.ToString()).SendAsync("UpdateTable", lot.Id, bet.User.Id, bet.User.UserName, bet.NewPrice,
+                     TimeZoneInfo.ConvertTimeFromUtc(bet.Time, TimeZoneInfo.Local));
+                //////
+                if (lot.Bets.Count >= 1 && currentUser.Email != user.Email)
                 {
                     
                     await Email.SendEmailAsync(currentUser.Email, "CarLots",

@@ -12,7 +12,7 @@ namespace AuctionCars.Components
     {
         public string Invoke(CarLot lot, IViewLocalizer localizer)
         {
-            TimeSpan left = lot.Ending - DateTime.Now;
+            TimeSpan left = lot.Ending - DateTime.UtcNow;
             return $"{left.Days} {localizer["D"].Value}. : {left.Hours} {localizer["H"].Value}. : {left.Minutes} {localizer["M"].Value}.";
         }
     }

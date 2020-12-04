@@ -19,6 +19,9 @@ namespace Data
         [Column("CarId")]
         public Car Car { get; set; }
 
+        [Column("WinnerName")]
+        public string WinnerName { get; set; }
+
         [Column("UserId")]
         public User User { get; set; }
 
@@ -41,5 +44,8 @@ namespace Data
                 return true;
             else return false;
         }
+
+        [Column("Ended")]
+        public bool Ended { get; set; }
     }
 }

@@ -138,7 +138,7 @@
                             <tr class="table-row">
                                 <td><obj-link class="object-link" obj=@bet.User></obj-link></td>
                                 <td>@bet.NewPrice</td>
-                                <td>@bet.Time</td>
+                                <td>@bet.Time.AddHours(TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now).Hours)</td>
                             </tr> 
                         }
                     }
@@ -183,7 +183,7 @@
 
 
     </div>
-    <div class="row justify-content-center">
+    <div id="prepared" class="row justify-content-center">
         <div class="container">
             <div class="col col-12" style="margin-top:15px;">
                 <h4>@Localizer["Comments"]</h4>
@@ -233,6 +233,7 @@
             var user_td = document.createElement('td');
             var user_link = document.createElement('a');
             user_link.classList.add('object-link');
+
             var link_text = document.createTextNode(user_name);
             user_link.appendChild(link_text);
             user_link.href = "/Users/Profile/" + user_id;
@@ -267,7 +268,22 @@
 
         }
     })
-    updateHub.start();
+    //updateHub.start();
+
+    updateHub.start().then(function () {
+        console.log("First");
+        updateHub.invoke('JoinGroup', @Model.Lot.Id);
+        console.log(@Model.Lot.Id);
+
+        console.log("Third");
+        $('#sendButton').click(function() {
+            
+            updateHub.invoke('Send', lot_id, user_id, user_name, price, time, lot_id);
+            
+        });
+        console.log("Fourth");
+    });
+
 </script>
 
 

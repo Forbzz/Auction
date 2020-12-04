@@ -15,7 +15,7 @@
             
             <td><obj-link class="object-link" obj="@user"></obj-link></td>
             <td>@user.Email</td>
-            <td>@user.Registration</td>
+            <td>@TimeZoneInfo.ConvertTimeFromUtc(user.Registration,TimeZoneInfo.Local)</td>
         </tr>
     }
 </table>

@@ -126,7 +126,7 @@ namespace AuctionCars.Controllers
                 {
                     Email = model.Email,
                     UserName = model.Name,
-                    Registration = DateTime.Now,
+                    Registration = DateTime.Now.ToUniversalTime(),
                  
                 };
 
