@@ -87,5 +87,10 @@ namespace Services.Entity
         {
             return db.CarLots.Include(l => l.User).Include(l => l.Car).AsEnumerable().Where(l => l.IsActual() && l.Applyed == false).OrderBy(l => l.Ending).Skip(itemsToSkip).Take(pageSize).ToList();
         }
+
+        public IEnumerable<CarLot> NotCheckedLots()
+        {
+            return db.CarLots.Include(c => c.User).Where(c => c.Ended == false).ToList();
+        }
     }
 }

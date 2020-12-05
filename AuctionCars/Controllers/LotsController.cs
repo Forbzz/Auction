@@ -247,7 +247,7 @@ namespace AuctionCars.Controllers
                     User = user,
                     NewPrice = model.BetPrice,
                     CarLot = lot,
-                    Time = DateTime.Now.ToUniversalTime()
+                    Time = DateTime.UtcNow
                 };
                 lot.WinnerName = user.UserName;
                 if (lot.Bets.Count > 1)
@@ -257,8 +257,8 @@ namespace AuctionCars.Controllers
                 carLotsRepository.UpdateLot(lot);
 
                 ///////
-                await updateHub.Clients.Group(lot.Id.ToString()).SendAsync("UpdateTable", lot.Id, bet.User.Id, bet.User.UserName, bet.NewPrice,
-                     TimeZoneInfo.ConvertTimeFromUtc(bet.Time, TimeZoneInfo.Local));
+                await updateHub.Clients.Group(lot.Id.ToString()).SendAsync("UpdateTable", lot.Id, bet.User.Id, bet.User.UserName, bet.NewPrice,bet.Time);
+                //  TimeZoneInfo.ConvertTimeFromUtc(bet.Time, TimeZoneInfo.Local));
                 //////
                 if (lot.Bets.Count >= 1 && currentUser.Email != user.Email)
                 {

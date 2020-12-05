@@ -24,7 +24,7 @@ using Services;
 using Services.Abstract;
 using Services.Entity;
 using Hangfire;
-
+using Microsoft.AspNetCore.Http;
 
 namespace AuctionCars
 {
@@ -40,7 +40,13 @@ namespace AuctionCars
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            
+            services.AddDistributedMemoryCache();
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(10);//We set Time here 
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
 
             string connection = Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connection, b => b.MigrationsAssembly("AuctionCars")));
@@ -52,6 +58,7 @@ namespace AuctionCars
             services.AddTransient<ICarRepository, CarRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddSingleton<IEmail, Email>();
+            
 
             services.AddHangfire(x => x.UseSqlServerStorage(
                 Configuration.GetConnectionString("DefaultConnection")));
@@ -85,25 +92,18 @@ namespace AuctionCars
             });
 
             
-            
-            
-
-
 
             services.AddAuthentication()
                 .AddGoogle(options =>
                 {
                     options.ClientId = Configuration["google:ClientId"];
                     options.ClientSecret = Configuration["google:ClientSecret"];
-                    //options.ClientId = "553190241471-1mfbonihr15q6jahim861cadpamqj7oo.apps.googleusercontent.com";
-                    //options.ClientSecret = "OjdFMvWKYnjr5EAxqZV1975h";
                 })
                 .AddFacebook(options =>
                 {
                     options.AppId = Configuration["facebook:AppId"];
                     options.AppSecret = Configuration["facebook:AppSecret"];
-                    //options.AppId = "720261328615445";
-                    //options.AppSecret = "60ec6a61050e16094cf0b13c04056db2";
+
                 });
 
             services.AddIdentity<User, IdentityRole>(options =>
@@ -139,18 +139,29 @@ namespace AuctionCars
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+           // app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
             app.UseRequestLocalization();
             app.UseAuthorization();
             app.UseAuthentication();
-            app.UseCookiePolicy();
+            //app.UseCookiePolicy();
+         
             app.UseHangfireServer();
             app.UseHangfireDashboard();
 
             app.UseHangfireServer();
             app.UseHangfireDashboard();
+
+            app.UseSession();
+            app.Use(async (context, next) =>
+            {
+                if (context.Request.Cookies.ContainsKey("timezoneoffset"))
+                {
+                    context.Session.SetInt32("timezoineoffset", int.Parse(context.Request.Cookies["timezoneoffset"]));
+                }
+                await next.Invoke();
+            });
 
             app.UseEndpoints(endpoints =>
             {

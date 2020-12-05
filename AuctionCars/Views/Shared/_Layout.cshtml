@@ -28,10 +28,10 @@
                 <li class="nav-item"><a class="nav-ref" asp-area="" asp-controller="Lots" asp-action="Ended"><div>@Localizer["EndedLots"]</div></a></li>
                 <li class="nav-item"><a class="nav-ref" asp-area="" asp-controller="Lots" asp-action="Create"><div>@Localizer["CreateLot"]</div></a></li>
                 @*@if (!User.IsInRole("guest"))
-                {
-                    <li class="nav-item"><a class="nav-ref" asp-area="" asp-controller="Lots" asp-action="Create"><div>@Localizer["CreateLot"]</div></a></li>
-                }
-*@
+                    {
+                        <li class="nav-item"><a class="nav-ref" asp-area="" asp-controller="Lots" asp-action="Create"><div>@Localizer["CreateLot"]</div></a></li>
+                    }
+                *@
 
                 @if (User.IsInRole("admin") || User.IsInRole("moderator"))
                 {
@@ -92,6 +92,35 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/jquery-cookie/jquery.cookie.js"></script>
+    <script>
+        $(function () {
+            setTimezoneCookie();
+        });
+        function setTimezoneCookie() {
+            var timezone_cookie = "timezoneoffset";
+
+            if (!$.cookie(timezone_cookie)) {
+                var test_cookie = 'test cookie';
+                $.cookie(test_cookie, true);
+
+                if ($.cookie(test_cookie)) {
+                    $.cookie(test_cookie, null);
+                    $.cookie(timezone_cookie, new Date().getTimezoneOffset());
+                    location.reload();
+                }
+            }
+            else {
+                var storedOffset = parseInt($.cookie(timezone_cookie));
+                var currentOffset = new Date().getTimezoneOffset();
+
+                if (storedOffset !== currentOffset) {
+                    $.cookie(timezone_cookie, new Date().getTimezoneOffset());
+                    location.reload();
+                }
+            }
+        }
+    </script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="https://apis.google.com/js/platform.js" async defer></script>
 
