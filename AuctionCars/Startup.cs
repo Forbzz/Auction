@@ -96,19 +96,19 @@ namespace AuctionCars
             services.AddAuthentication()
                 .AddGoogle(options =>
                 {
-                    /*options.ClientId = "553190241471-1mfbonihr15q6jahim861cadpamqj7oo.apps.googleusercontent.com";
-                    options.ClientSecret = "OjdFMvWKYnjr5EAxqZV1975h";*/
+                    options.ClientId = Configuration["google-ClientId"];
+                    options.ClientSecret = Configuration["google-ClientSecret"];
 
-                    options.ClientId = Configuration["google:ClientId"];
-                    options.ClientSecret = Configuration["google:ClientSecret"];
+                  //  options.ClientId = Configuration["google:ClientId"];
+                  //  options.ClientSecret = Configuration["google:ClientSecret"];
                 })
                 .AddFacebook(options =>
                 {
-                    /*options.AppId = "720261328615445";
-                    options.AppSecret = "60ec6a61050e16094cf0b13c04056db2";*/
+                    options.AppId = Configuration["facebook-AppId"];
+                    options.AppSecret = Configuration["facebook-AppSecret"];
 
-                    options.AppId = Configuration["facebook:AppId"];
-                    options.AppSecret = Configuration["facebook:AppSecret"];
+                   // options.AppId = Configuration["facebook:AppId"];
+                   // options.AppSecret = Configuration["facebook:AppSecret"];
 
                 });
 

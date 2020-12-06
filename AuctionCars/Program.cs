@@ -9,6 +9,11 @@ using Microsoft.Extensions.Logging;
 using Repo;
 using Serilog;
 using Serilog.Events;
+using Azure.Identity;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Azure.Services.AppAuthentication;
+using Microsoft.Azure.KeyVault;
+using Microsoft.Extensions.Configuration.AzureKeyVault;
 
 namespace AuctionCars
 {
@@ -17,6 +22,7 @@ namespace AuctionCars
         public static async Task Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
+
             Log.Logger = new LoggerConfiguration()
                 .Enrich.FromLogContext()
                 .WriteTo.File("Logs\\AllLogs.txt")
@@ -52,12 +58,22 @@ namespace AuctionCars
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                })
-            .UseSerilog();
-        
+         Host.CreateDefaultBuilder(args)
+         .ConfigureAppConfiguration((ctx, builder) =>
+         {
+             var keyVaultEndpoint = GetKeyVaultEndpoint();
+             if (!string.IsNullOrEmpty(keyVaultEndpoint))
+             {
+                 var azureServiceTokenProvider = new AzureServiceTokenProvider();
+                 var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
+                 builder.AddAzureKeyVault(keyVaultEndpoint, keyVaultClient, new DefaultKeyVaultSecretManager());
+             }
+         })
+         .ConfigureWebHostDefaults(webBuilder =>
+         {
+             webBuilder.UseStartup<Startup>();
+         })
+             .UseSerilog();
+        private static string GetKeyVaultEndpoint() => Environment.GetEnvironmentVariable("VaultUri");
     }
 }
