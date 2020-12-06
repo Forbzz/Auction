@@ -96,11 +96,17 @@ namespace AuctionCars
             services.AddAuthentication()
                 .AddGoogle(options =>
                 {
+                    /*options.ClientId = "553190241471-1mfbonihr15q6jahim861cadpamqj7oo.apps.googleusercontent.com";
+                    options.ClientSecret = "OjdFMvWKYnjr5EAxqZV1975h";*/
+
                     options.ClientId = Configuration["google:ClientId"];
                     options.ClientSecret = Configuration["google:ClientSecret"];
                 })
                 .AddFacebook(options =>
                 {
+                    /*options.AppId = "720261328615445";
+                    options.AppSecret = "60ec6a61050e16094cf0b13c04056db2";*/
+
                     options.AppId = Configuration["facebook:AppId"];
                     options.AppSecret = Configuration["facebook:AppSecret"];
 
@@ -133,7 +139,8 @@ namespace AuctionCars
             }
             if(env.IsProduction())
             {
-                app.UseStatusCodePagesWithReExecute("/Error/Index", "?statusCode={0}");
+                app.UseDeveloperExceptionPage();
+                //app.UseStatusCodePagesWithReExecute("/Error/Index", "?statusCode={0}");
 
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
@@ -146,9 +153,7 @@ namespace AuctionCars
             app.UseAuthorization();
             app.UseAuthentication();
             //app.UseCookiePolicy();
-         
-            app.UseHangfireServer();
-            app.UseHangfireDashboard();
+
 
             app.UseHangfireServer();
             app.UseHangfireDashboard();
@@ -157,9 +162,7 @@ namespace AuctionCars
             app.Use(async (context, next) =>
             {
                 if (context.Request.Cookies.ContainsKey("timezoneoffset"))
-                {
-                    context.Session.SetInt32("timezoineoffset", int.Parse(context.Request.Cookies["timezoneoffset"]));
-                }
+                    context.Session.SetInt32("timezoneoffset", int.Parse(context.Request.Cookies["timezoneoffset"]));
                 await next.Invoke();
             });
 

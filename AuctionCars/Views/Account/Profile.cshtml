@@ -2,7 +2,7 @@
 @using Microsoft.AspNetCore.Identity
 @inject IViewLocalizer Localizer
 @inject UserManager<Data.User> UserManager
-@using AuctionCars.Views
+
 
 
 @{ var selected = UserManager.FindByIdAsync(Model.user.Id);
@@ -137,7 +137,7 @@
                                 <td>@lot.Price</td>
                             }
 
-                        <td>@TimeZoneInfo.ConvertTimeFromUtc(lot.Ending, TimeZoneInfo.Local)</td>
+                        <td>@lot.Ending.ToClientTime(Context.Session)</td>
                         </tr>
                     }
                 }
@@ -165,7 +165,7 @@
                             <tr class="table-row">
                                 <td><car class="object-link" obj=@lot></car></td>
                                 <td>@lot.Price</td>
-                                <td>@TimeZoneInfo.ConvertTimeFromUtc(lot.Ending, TimeZoneInfo.Local)</td>
+                                <td>@lot.Ending.ToClientTime(Context.Session)</td>
                             </tr>
                         }
                     }

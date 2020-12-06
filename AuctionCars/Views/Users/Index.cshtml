@@ -5,6 +5,7 @@
 @model IEnumerable<Data.User>
 @inject IViewLocalizer Localizer
 
+
 <h2 class="form-header">@Localizer["UsersList"]</h2>
 
 <table class="form-body" cellspacing="0">
@@ -15,7 +16,7 @@
             
             <td><obj-link class="object-link" obj="@user"></obj-link></td>
             <td>@user.Email</td>
-            <td>@TimeZoneInfo.ConvertTimeFromUtc(user.Registration,TimeZoneInfo.Local)</td>
+            <td>@user.Registration.ToClientTime(Context.Session)</td>
         </tr>
     }
 </table>
