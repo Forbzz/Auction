@@ -129,7 +129,8 @@ namespace AuctionCars
             }
             if(env.IsProduction())
             {
-                app.UseStatusCodePagesWithReExecute("/Error/Index", "?statusCode={0}");
+                app.UseDeveloperExceptionPage();
+                //app.UseStatusCodePagesWithReExecute("/Error/Index", "?statusCode={0}");
 
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
