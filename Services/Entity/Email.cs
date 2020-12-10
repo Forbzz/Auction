@@ -32,7 +32,7 @@ namespace Services
             using (var client = new SmtpClient())
             {
                 await client.ConnectAsync("smtp.mail.ru", 25, false);
-                await client.AuthenticateAsync(_configuration["email"], _configuration["email-password"]);
+                await client.AuthenticateAsync(_configuration["email"], _configuration["email-pass"]);
                 await client.SendAsync(emailMessage);
                 await client.DisconnectAsync(true);
 

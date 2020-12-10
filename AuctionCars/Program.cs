@@ -23,22 +23,27 @@ namespace AuctionCars
         {
             var host = CreateHostBuilder(args).Build();
 
-            Log.Logger = new LoggerConfiguration()
-                .Enrich.FromLogContext()
-                .WriteTo.File("Logs\\AllLogs.txt")
-                .WriteTo.Logger(lc => lc
-                .Filter.ByIncludingOnly(le => le.Level == LogEventLevel.Verbose)
-                .WriteTo.File("Logs\\ErrorLogs.txt"))
-                .WriteTo.Logger(lc => lc
-                .Filter.ByIncludingOnly(le => le.Level == LogEventLevel.Error)
-                .WriteTo.Console())
-                .CreateLogger();
+          
 
             using (var scope = host.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
+                var config = services.GetRequiredService<IConfiguration>();
                 try
                 {
+                    Log.Logger = new LoggerConfiguration()
+                   .Enrich.FromLogContext()
+                   /*.WriteTo.File("Logs\\AllLogs.txt")*/
+                   .WriteTo.File(config["AllLogs"])
+                   .WriteTo.Logger(lc => lc
+                   .Filter.ByIncludingOnly(le => le.Level == LogEventLevel.Verbose)
+                   /*.WriteTo.File("Logs\\ErrorLogs.txt"))*/
+                   .WriteTo.File(config["ErrorLogs"]))
+                   .WriteTo.Logger(lc => lc
+                   .Filter.ByIncludingOnly(le => le.Level == LogEventLevel.Error)
+                   .WriteTo.Console())
+                   .CreateLogger();
+
                     var userManager = services.GetRequiredService<UserManager<User>>();
                     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
                     await DB.RoleInitializer.InitializeAsync(userManager, roleManager);

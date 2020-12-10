@@ -117,6 +117,7 @@ namespace AuctionCars.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> CreateAsync()
         {
             User user = await _userManager.GetUserAsync(HttpContext.User);

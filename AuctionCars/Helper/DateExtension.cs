@@ -11,6 +11,7 @@ namespace AuctionCars.Helper
         public static string ToClientTime(this DateTime dt, ISession session)
         {
             var timeOffSet = session.GetInt32("timezoneoffset");
+            
 
             if (timeOffSet != null)
             {

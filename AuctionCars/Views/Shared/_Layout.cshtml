@@ -94,43 +94,7 @@
     <script src="~/lib/jquery/dist/jquery.js"></script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/jquery/dist/jquery.cookie.js"></script>
-    <script>
-        $(function () {
-           // setTimezoneCookie();
-            Timezone();
-        });
-        @*function setTimezoneCookie() {
-            var timezone_cookie = "timezoneoffset";
-           // console.log($.cookie(timezone_cookie));
-            if (!$.cookie(timezone_cookie)) {
-                var test_cookie = 'test cookie';
-                $.cookie(test_cookie, true);
-
-                if ($.cookie(test_cookie)) {
-                    $.cookie(test_cookie, null);
-                    $.cookie(timezone_cookie, new Date().getTimezoneOffset());
-
-                    location.reload();
-                }
-            }
-            else {
-                var storedOffset = parseInt($.cookie(timezone_cookie));
-                var currentOffset = new Date().getTimezoneOffset();
-
-                if (storedOffset !== currentOffset) {
-                    $.cookie(timezone_cookie, new Date().getTimezoneOffset());
-                    location.reload();
-                }
-            }
-            //console.log($.cookie(timezone_cookie));
-        }*@
-
-        function Timezone() {
-            var value = new Date().getTimezoneOffset();
-            console.log(value);
-            document.cookie = 'timezoneoffset' + '=' + encodeURI(value);
-        }
-    </script>
+    <script src="~/js/timezone.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
 
