@@ -50,29 +50,10 @@ namespace AuctionCars.Controllers
             updateHub = _updateHub;
         }
 
-
         [HttpGet]
-        public ActionResult PreModeration(int? id)
+        public IActionResult PreModeration()
         {
-
-            int page = id ?? 0;
-            if (HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-            {
-                return PartialView("_LotsListPart", GetItemsPage(page));
-            }
-            return View("PreModeration", GetItemsPage(page));
-        }
-
-        private IEnumerable<CarLot> GetItemsPage(int page = 0)
-        {
-            int itemsToSkip = page * pageSize;
-            return carLotsRepository.PremoderationLots(itemsToSkip, pageSize);
-        }
-
-        [HttpGet]
-        public ActionResult Load(int? id)
-        {
-            return PreModeration(id);
+            return View(carLotsRepository.PremoderationLots());
         }
 
         public IActionResult Apply(int id)

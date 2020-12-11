@@ -54,23 +54,13 @@ namespace Services.Entity
 
         public IEnumerable<CarLot> ActualLot()
         {
-            return db.CarLots.Include(l => l.User).Include(l => l.Car).AsEnumerable().Where(l => l.IsActual()).OrderBy(l => (l.Ending.Day - DateTime.Now.Day)).ToList();
+            return db.CarLots.Include(l => l.User).Include(l => l.Car).AsEnumerable().Where(l => l.IsActual() && l.Applyed == true).OrderBy(l => (l.Ending.Day - DateTime.Now.Day)).ToList();
 
-        }
-
-        public IEnumerable<CarLot> ActualLotsPage(int itemsToSkip, int pageSize)
-        {
-            return db.CarLots.Include(l => l.User).Include(l => l.Car).AsEnumerable().Where(l => l.IsActual() && l.Applyed == true).OrderBy(l => l.Ending).Skip(itemsToSkip).Take(pageSize).ToList();
-        }
-
-        public IEnumerable<CarLot> EndedLotsPage(int itemsToSkip, int pageSize)
-        {
-            return db.CarLots.Include(l => l.User).Include(l => l.Car).AsEnumerable().Where(l => !l.IsActual() && l.Applyed == true).OrderBy(l => l.Ending).Skip(itemsToSkip).Take(pageSize).ToList();
         }
 
         public IEnumerable<CarLot> EndedLots()
         {
-            return db.CarLots.Include(l => l.User).Include(l => l.Car).AsEnumerable().Where(l => !l.IsActual()).OrderByDescending(l => l.Ending).ToList();
+            return db.CarLots.Include(l => l.User).Include(l => l.Car).AsEnumerable().Where(l => !l.IsActual() && l.Applyed == true).OrderByDescending(l => l.Ending).ToList();
         }
 
         public CarLot GetDetailLot(int? id)
@@ -83,9 +73,9 @@ namespace Services.Entity
             return db.CarLots.Include(l => l.User).Include(l => l.Comments).ThenInclude(c => c.Likes).Include(l => l.Car).Include(l => l.Bets).ThenInclude(b => b.User).Where(l => l.User == user);
         }
 
-        public IEnumerable<CarLot> PremoderationLots(int itemsToSkip, int pageSize)
+        public IEnumerable<CarLot> PremoderationLots()
         {
-            return db.CarLots.Include(l => l.User).Include(l => l.Car).AsEnumerable().Where(l => l.IsActual() && l.Applyed == false).OrderBy(l => l.Ending).Skip(itemsToSkip).Take(pageSize).ToList();
+            return db.CarLots.Include(l => l.User).Include(l => l.Car).AsEnumerable().Where(l => l.IsActual() && l.Applyed == false).OrderBy(l => l.Ending).ToList();
         }
 
         public IEnumerable<CarLot> NotCheckedLots()

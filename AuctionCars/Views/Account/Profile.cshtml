@@ -32,8 +32,7 @@
             </tr>
             <tr>
                 <td class="desc-table-title">@Localizer["Registered"]:</td>
-                @*<td class="utc-time">@TimeZoneInfo.ConvertTimeFromUtc(Model.user.Registration, TimeZoneInfo.Local)</td>*@
-                <td class="desc-table-content">@Model.user.Registration.ToClientTime(Context.Session)</td>
+                <td class="desc-table-content">@Model.user.Registration.ToClientTime(Context)</td>
 
             </tr>
 
@@ -99,9 +98,9 @@
                     foreach (var bet in Model.user.Bets.OrderByDescending(b => b.Time))
                     {
                         <tr class="table-row">
-                            <td><car class="object-link" obj=@bet.CarLot></car></td>
+                            <td><obj-link class="object-link" obj=@bet.CarLot></obj-link></td>
                             <td>@bet.NewPrice</td>
-                            <td>@bet.Time.ToClientTime(Context.Session)</td>
+                            <td>@bet.Time.ToClientTime(Context)</td>
                         </tr>
                     }
                 }
@@ -123,7 +122,7 @@
                     foreach (var lot in Model.user.CarLots.OrderByDescending(l => l.Ending))
                     {
                         <tr class="table-row">
-                            <td><car class="object-link" obj=@lot></car></td>
+                            <td><obj-link class="object-link" obj=@lot></obj-link></td>
                             @if(lot.Applyed == false)
                             {
                                 <td>@Localizer["Moderation"]</td>
@@ -137,7 +136,7 @@
                                 <td>@lot.Price</td>
                             }
 
-                        <td>@lot.Ending.ToClientTime(Context.Session)</td>
+                        <td>@lot.Ending.ToClientTime(Context)</td>
                         </tr>
                     }
                 }
@@ -163,9 +162,9 @@
                         {
                             winSmth = true;
                             <tr class="table-row">
-                                <td><car class="object-link" obj=@lot></car></td>
+                                <td><obj-link class="object-link" obj=@lot></obj-link></td>
                                 <td>@lot.Price</td>
-                                <td>@lot.Ending.ToClientTime(Context.Session)</td>
+                                <td>@lot.Ending.ToClientTime(Context)</td>
                             </tr>
                         }
                     }

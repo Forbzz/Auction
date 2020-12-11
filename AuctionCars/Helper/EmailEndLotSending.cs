@@ -31,12 +31,7 @@ namespace AuctionCars.Helper
 
         public async Task CheckLot()
         {
-            //var db = _serviceProvider.CreateScope().ServiceProvider.GetRequiredService<ApplicationContext>();
-            // var userManager = _serviceProvider.CreateScope().ServiceProvider.GetRequiredService<UserManager<User>>();
             var lots = repository.NotCheckedLots();
-
-            //var lots = await db.CarLots.Include(c => c.User).Where(c => c.Ended == false).ToListAsync();
-/*            Email email = new Email();*/
             foreach(var lot in lots)
             {
                 if(lot.Ending < DateTime.UtcNow)
@@ -62,7 +57,6 @@ namespace AuctionCars.Helper
                     }
 
                     lot.Ended = true;
-                   // await db.SaveChangesAsync();
                     repository.UpdateLot(lot);
 
                 }

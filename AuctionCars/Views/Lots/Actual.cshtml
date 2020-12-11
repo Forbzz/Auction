@@ -2,8 +2,8 @@
 
 <div class="listing">
     @{foreach (var lot in Model)
-      {
-        @await Html.PartialAsync("_LotsList", lot)  
-      } 
-     }
+        {
+            @await Html.PartialAsync("_LotsList", lot)
+        }
+    }
 </div>

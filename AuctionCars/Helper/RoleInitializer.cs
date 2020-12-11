@@ -36,7 +36,7 @@ namespace AuctionCars.DB
 
             if(await userManager.FindByEmailAsync(adminEmail) == null)
             {
-                User admin = new User { Email = adminEmail, UserName = adminName, Registration = DateTime.Now.ToUniversalTime() };
+                User admin = new User { Email = adminEmail, UserName = adminName, Registration = DateTime.UtcNow };
                 IdentityResult result = await userManager.CreateAsync(admin, password);
                 if(result.Succeeded)
                 {

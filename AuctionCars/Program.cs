@@ -76,7 +76,7 @@ namespace AuctionCars
          {
              webBuilder.UseStartup<Startup>();
          })
-             .UseSerilog();
+         .UseSerilog();
         private static string GetKeyVaultEndpoint() => Environment.GetEnvironmentVariable("VaultUri");
     }
 }

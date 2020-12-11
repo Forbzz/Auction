@@ -38,8 +38,6 @@ namespace AuctionCars.Controllers
         private ICommentsRepository commRep;
         private IEmail Email;
         private IHubContext<UpdateHub> updateHub;
-        public static bool actual { get; set; }
-        const int pageSize = 4;
 
         public LotsController(ApplicationContext context, IEmail _Email, CarData carData, ILogger<LotsController> _logger, IHubContext<UpdateHub> _updateHub, UserManager<User> userManager,ICarRepository carRep, ICommentsRepository comm, IBetPerository rep, IWebHostEnvironment appEnviroment, ICarLotsRepository c, ILikesRepository l)
         {
@@ -56,65 +54,19 @@ namespace AuctionCars.Controllers
             Email = _Email;
         }
 
-       
-
         [HttpGet]
-        public ActionResult Actual(int? id)
+        public IActionResult Actual()
         {
             RecurringJob.AddOrUpdate<EmailEndLotSending>(x => x.CheckLot(), Cron.Minutely);
-            actual = true;
-            int page = id ?? 0;
-            if (HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-            {
-                return PartialView("_LotsListPart", GetActualItemsPage(page));
-            }
-            return View("List", GetActualItemsPage(page));
+            return View(carLotsRepository.ActualLot());
         }
-
 
         [HttpGet]
-        public ActionResult Ended(int? id)
+        public IActionResult Ended()
         {
-            actual = false;
-            int page = id ?? 0;
-            if (HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-            {
-                return PartialView("_LotsListPart", GetEndedItemsPage(page));
-            }
-            return View("List", GetEndedItemsPage(page));
+            return View(carLotsRepository.EndedLots());
         }
 
-
-
-       private IEnumerable<CarLot> GetActualItemsPage(int page = 0)
-        {
-            int itemsToSkip = page * pageSize;
-            return carLotsRepository.ActualLotsPage(itemsToSkip, pageSize);
-        }
-
-
-
-
-        private IEnumerable<CarLot> GetEndedItemsPage(int page = 0)
-        {
-            int itemsToSkip = page * pageSize;
-
-            return carLotsRepository.EndedLotsPage(itemsToSkip, pageSize);
-        }
-
-
-        [HttpGet]
-        public ActionResult Load(int? id)
-        {
-            if (actual == true)
-            {
-                return Actual(id);
-            }
-            else
-            {
-                return Ended(id);
-            }
-        }
 
         [HttpGet]
         [Authorize]
@@ -122,10 +74,6 @@ namespace AuctionCars.Controllers
         {
             User user = await _userManager.GetUserAsync(HttpContext.User);
 
-            if (user == null)
-            {
-                return RedirectToAction("Login", "Account");
-            }
 
             var roles = await _userManager.GetRolesAsync(user);
             if(roles.Any(r => r == "guest"))
@@ -235,7 +183,6 @@ namespace AuctionCars.Controllers
             User currentUser = await _userManager.GetUserAsync(HttpContext.User);
             if (lot.Price > model.BetPrice || lot.StartPrice > model.BetPrice)
             {
-                ModelState.AddModelError(nameof(LotDetailtViewModel.BetPrice), "Ставка должна быть выше текущей");
                 return RedirectToAction("Detail", new { id = lot.Id });
             }
 
@@ -257,10 +204,9 @@ namespace AuctionCars.Controllers
                 lot.Price = model.BetPrice;
                 carLotsRepository.UpdateLot(lot);
 
-                ///////
+
                 await updateHub.Clients.Group(lot.Id.ToString()).SendAsync("UpdateTable", lot.Id, bet.User.Id, bet.User.UserName, bet.NewPrice,bet.Time);
-                //  TimeZoneInfo.ConvertTimeFromUtc(bet.Time, TimeZoneInfo.Local));
-                //////
+
                 if (lot.Bets.Count >= 1 && currentUser.Email != user.Email)
                 {
                     
@@ -391,7 +337,6 @@ namespace AuctionCars.Controllers
         }
 
         
-
         public PartialViewResult CommentsList(int id)
         {
             CarLot lot = carLotsRepository.GetDetailLot(id);

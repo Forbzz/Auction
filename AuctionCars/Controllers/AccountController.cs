@@ -145,7 +145,6 @@ namespace AuctionCars.Controllers
                         "Account",
                         new { userId = user.Id, code = code },
                         protocol: HttpContext.Request.Scheme);
-                    //Email email = new Email();
                     await Email.SendEmailAsync(model.Email, "Confirm your account",
                         $"Подтвердите аккаунт, перейдя по ссылке: <a href='{url}'>link</a>");
                    
@@ -235,7 +234,7 @@ namespace AuctionCars.Controllers
                         {
                             UserName = result,
                             Email = info.Principal.FindFirstValue(ClaimTypes.Email),
-                            Registration = DateTime.Now,
+                            Registration = DateTime.UtcNow,
                             EmailConfirmed = true
                         };
 
@@ -275,7 +274,6 @@ namespace AuctionCars.Controllers
                 return RedirectToAction("Index");
             }
             User currentUser = await _userManager.GetUserAsync(HttpContext.User);
-            var roles = await _userManager.GetRolesAsync(user);
             ProfileViewModel obj = new ProfileViewModel
             {
                 user = user,
@@ -371,19 +369,18 @@ namespace AuctionCars.Controllers
                 foreach (Bet bet in userBets)
                 {
                     CarLot stavkiOnCarLotUsera = bet.CarLot;
-                    //if(stavkiOnCarLotUsera.IsActual())
-                    //{
+
                         if (stavkiOnCarLotUsera.Bets.Count != 0)
                             bet.CarLot.Price = stavkiOnCarLotUsera.Bets.Last().NewPrice;
                         else
                             bet.CarLot.Price = bet.CarLot.StartPrice;
-                    //}
+
                 }
                 
 
                 foreach (CarLot lot in lots)
                 {
-                    //var lastBet = db.Bets.Where(b => b.CarLot.Id == lot.Id).Last();
+
                     string path = "wwwroot/images/" + lot.Id + ".jpg";
                     System.IO.File.Delete(path);
                 }

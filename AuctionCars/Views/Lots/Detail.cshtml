@@ -56,7 +56,7 @@
             <table id="lot-table-right">
                 <tr>
                     <td class="lot-table-title">@Localizer["Owner"]:</td>
-                    <td class="lot-table-data"><user class="object-link" syl="@Model.Lot.User"></user></td>
+                    <td class="lot-table-data"><obj-link class="object-link" obj="@Model.Lot.User"></obj-link></td>
 
                 </tr>
                 <tr>
@@ -81,7 +81,7 @@
                         <td class="lot-table-title">@Localizer["Leader"]:</td>
                         if (Model.Lot.Bets.Any())
                         {
-                            <td id="leaderLabel" class="lot-table-data"><user class="object-link" syl="@Model.getWinner()"></user></td>
+                            <td id="leaderLabel" class="lot-table-data"><obj-link class="object-link" obj="@Model.getWinner()"></obj-link></td>
                         }
                         else
                         {
@@ -94,7 +94,7 @@
                         <td class="lot-table-title">@Localizer["Winner"]:</td>
                         @if (Model.Lot.Bets.Any())
                         {
-                            <td id="leaderLabel" class="lot-table-data"><user class="object-link" syl="@Model.getWinner()"></user></td>
+                            <td id="leaderLabel" class="lot-table-data"><obj-link class="object-link" obj="@Model.getWinner()"></obj-link></td>
 
                         }
                         else
@@ -139,8 +139,7 @@
                     <tr class="table-row">
                         <td><obj-link class="object-link" obj=@bet.User></obj-link></td>
                         <td>@bet.NewPrice</td>
-                        <td>@bet.Time.ToClientTime(Context.Session)</td>
-                        @*<td>@bet.Time.ToClientTime(Context)</td>*@
+                        <td>@bet.Time.ToClientTime(Context)</td>
                     </tr> 
                         }
                     }

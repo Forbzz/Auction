@@ -135,7 +135,10 @@ namespace AuctionCars
             }
             if(env.IsProduction())
             {
+                //app.UseDeveloperExceptionPage();
                 app.UseStatusCodePagesWithReExecute("/Error/Index", "?statusCode={0}");
+
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
@@ -151,14 +154,7 @@ namespace AuctionCars
             app.UseHangfireDashboard();
 
             app.UseSession();
-            app.Use(async (context, next) =>
-            {
-                if (context.Request.Cookies.ContainsKey("timezoneoffset"))
-                {
-                    context.Session.SetInt32("timezoneoffset", int.Parse(context.Request.Cookies["timezoneoffset"]));
-                }
-                await next.Invoke();
-            });
+
 
             app.UseEndpoints(endpoints =>
             {

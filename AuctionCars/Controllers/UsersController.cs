@@ -16,14 +16,11 @@ namespace AuctionCars.Controllers
     {
 
         UserManager<User> _userManager;
-        ApplicationContext db;
-        IUserRepository rep;
+
 
         public UsersController(IUserRepository _rep ,UserManager<User> userManager, ApplicationContext contex)
         {
             _userManager = userManager;
-            db = contex;
-            rep = _rep;
         }
 
         [HttpGet]
@@ -37,7 +34,7 @@ namespace AuctionCars.Controllers
 
         public IActionResult Index()
         {
-            ViewData["Message"] = "Все пользователи";
+
             return View(_userManager.Users.ToList());
         }
 

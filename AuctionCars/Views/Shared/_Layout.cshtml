@@ -27,11 +27,7 @@
                 </li>
                 <li class="nav-item"><a class="nav-ref" asp-area="" asp-controller="Lots" asp-action="Ended"><div>@Localizer["EndedLots"]</div></a></li>
                 <li class="nav-item"><a class="nav-ref" asp-area="" asp-controller="Lots" asp-action="Create"><div>@Localizer["CreateLot"]</div></a></li>
-                @*@if (!User.IsInRole("guest"))
-                    {
-                        <li class="nav-item"><a class="nav-ref" asp-area="" asp-controller="Lots" asp-action="Create"><div>@Localizer["CreateLot"]</div></a></li>
-                    }
-                *@
+
 
                 @if (User.IsInRole("admin") || User.IsInRole("moderator"))
                 {
@@ -41,7 +37,6 @@
                 }
 
             </ul>
-
 
 
             @if (User.Identity.IsAuthenticated)

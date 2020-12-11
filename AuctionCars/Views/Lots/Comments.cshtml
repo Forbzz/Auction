@@ -17,7 +17,7 @@
             <div class="row justify-content-center">
 
                 <div class="col col-7">
-                    <b><user syl="@Model.User">@Model.User.UserName</user></b>
+                    <b><obj-link obj="@Model.User">@Model.User.UserName</obj-link></b>
                     <p>@Model.Content</p>
                     <p>@Localizer["Likes"]: @Model.Likes.Count()</p>
                 </div>

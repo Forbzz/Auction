@@ -17,9 +17,7 @@ namespace Services.Abstract
         public void UpdateLot(CarLot lot);
         public void DeleteLot(CarLot lot);
         public IEnumerable<CarLot> ActualLot();
-        public IEnumerable<CarLot> ActualLotsPage(int itemsToSkip, int pageSize);
-        public IEnumerable<CarLot> EndedLotsPage(int itemsToSkip, int pageSize);
-        public IEnumerable<CarLot> PremoderationLots(int item, int pageSize);
+        public IEnumerable<CarLot> PremoderationLots();
 
         public IEnumerable<CarLot> GetUserLots(User user);
         public CarLot GetDetailLot(int? id);
