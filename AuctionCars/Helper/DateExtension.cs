@@ -11,7 +11,7 @@ namespace AuctionCars.Helper
         public static string ToClientTime(this DateTime dt, ISession session)
         {
             var timeOffSet = session.GetInt32("timezoneoffset");
-            
+
 
             if (timeOffSet != null)
             {
@@ -21,5 +21,19 @@ namespace AuctionCars.Helper
             }
             return dt.ToLocalTime().ToString();
         }
+
+        /*public static string ToClientTime(this DateTime dt, HttpContext context)
+        {
+            //var timeOffSet = session.GetInt32("timezoneoffset");
+            var timeOffSet = context.Request.Cookies["timezoneoffset"];
+
+            if (timeOffSet != null)
+            {
+                var offset = int.Parse(timeOffSet);
+                dt = dt.AddMinutes(-1 * offset);
+                return dt.ToString();
+            }
+            return dt.ToLocalTime().ToString();
+        }*/
     }
 }

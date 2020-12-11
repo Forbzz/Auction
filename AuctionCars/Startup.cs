@@ -99,16 +99,12 @@ namespace AuctionCars
                     options.ClientId = Configuration["google-ClientId"];
                     options.ClientSecret = Configuration["google-ClientSecret"];
 
-                  //  options.ClientId = Configuration["google:ClientId"];
-                  //  options.ClientSecret = Configuration["google:ClientSecret"];
                 })
                 .AddFacebook(options =>
                 {
                     options.AppId = Configuration["facebook-AppId"];
                     options.AppSecret = Configuration["facebook-AppSecret"];
 
-                   // options.AppId = Configuration["facebook:AppId"];
-                   // options.AppSecret = Configuration["facebook:AppSecret"];
 
                 });
 
@@ -139,10 +135,7 @@ namespace AuctionCars
             }
             if(env.IsProduction())
             {
-                app.UseDeveloperExceptionPage();
-                //app.UseStatusCodePagesWithReExecute("/Error/Index", "?statusCode={0}");
-
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseStatusCodePagesWithReExecute("/Error/Index", "?statusCode={0}");
                 app.UseHsts();
             }
 

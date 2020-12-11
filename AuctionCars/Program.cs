@@ -33,11 +33,9 @@ namespace AuctionCars
                 {
                     Log.Logger = new LoggerConfiguration()
                    .Enrich.FromLogContext()
-                   /*.WriteTo.File("Logs\\AllLogs.txt")*/
                    .WriteTo.File(config["AllLogs"])
                    .WriteTo.Logger(lc => lc
                    .Filter.ByIncludingOnly(le => le.Level == LogEventLevel.Verbose)
-                   /*.WriteTo.File("Logs\\ErrorLogs.txt"))*/
                    .WriteTo.File(config["ErrorLogs"]))
                    .WriteTo.Logger(lc => lc
                    .Filter.ByIncludingOnly(le => le.Level == LogEventLevel.Error)

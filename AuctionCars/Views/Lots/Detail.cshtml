@@ -136,11 +136,12 @@
                     {
                         foreach (var bet in Model.Lot.Bets.OrderByDescending(b => b.Time))
                         {
-                            <tr class="table-row">
-                                <td><obj-link class="object-link" obj=@bet.User></obj-link></td>
-                                <td>@bet.NewPrice</td>
-                                <td>@bet.Time.ToClientTime(Context.Session)</td>
-                            </tr> 
+                    <tr class="table-row">
+                        <td><obj-link class="object-link" obj=@bet.User></obj-link></td>
+                        <td>@bet.NewPrice</td>
+                        <td>@bet.Time.ToClientTime(Context.Session)</td>
+                        @*<td>@bet.Time.ToClientTime(Context)</td>*@
+                    </tr> 
                         }
                     }
                     else
