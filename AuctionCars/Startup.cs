@@ -7,7 +7,6 @@ using AuctionCars.Components;
 using AuctionCars.DB;
 using AuctionCars.Hubs;
 using Data;
-
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -25,6 +24,7 @@ using Services.Abstract;
 using Services.Entity;
 using Hangfire;
 using Microsoft.AspNetCore.Http;
+using Serilog;
 
 namespace AuctionCars
 {
@@ -40,13 +40,6 @@ namespace AuctionCars
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDistributedMemoryCache();
-            services.AddSession(options =>
-            {
-                options.IdleTimeout = TimeSpan.FromMinutes(10);//We set Time here 
-                options.Cookie.HttpOnly = true;
-                options.Cookie.IsEssential = true;
-            });
 
             string connection = Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connection, b => b.MigrationsAssembly("AuctionCars")));
@@ -57,20 +50,17 @@ namespace AuctionCars
             services.AddTransient<ILikesRepository, LikesRepository>();
             services.AddTransient<ICarRepository, CarRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
-            services.AddSingleton<IEmail, Email>();
+            services.AddTransient<IEmail, Email>();
             
 
             services.AddHangfire(x => x.UseSqlServerStorage(
                 Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddLocalization(options => options.ResourcesPath = "Resources");
+            
             services.AddControllersWithViews()
                 .AddViewLocalization()
                 .AddDataAnnotationsLocalization();
-            services.AddControllers();
-
-            
-                
 
             var supportedCultures = new[]
             {
@@ -78,10 +68,10 @@ namespace AuctionCars
                 new CultureInfo("en"),
                 new CultureInfo("de")
             };
-
+            services.AddScoped<CarData>();
             services.Configure<RequestLocalizationOptions>(options =>
             {
-                options.DefaultRequestCulture = new RequestCulture("en");
+                options.DefaultRequestCulture = new RequestCulture("ru");
                 options.SupportedCultures = supportedCultures;
                 options.SupportedUICultures = supportedCultures;
                 options.RequestCultureProviders = new List<IRequestCultureProvider>
@@ -92,22 +82,19 @@ namespace AuctionCars
             });
 
             
-
             services.AddAuthentication()
                 .AddGoogle(options =>
                 {
                     options.ClientId = Configuration["google-ClientId"];
                     options.ClientSecret = Configuration["google-ClientSecret"];
-
                 })
                 .AddFacebook(options =>
                 {
                     options.AppId = Configuration["facebook-AppId"];
                     options.AppSecret = Configuration["facebook-AppSecret"];
-
-
                 });
 
+            
             services.AddIdentity<User, IdentityRole>(options =>
             {
                 options.Password.RequiredLength = 5;
@@ -118,7 +105,6 @@ namespace AuctionCars
                 options.Password.RequireDigit = false;
             }).AddEntityFrameworkStores<ApplicationContext>().AddDefaultTokenProviders();
 
-            services.AddTransient<CarData>();
 
             services.AddSignalR();
         }
@@ -126,6 +112,7 @@ namespace AuctionCars
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+           
 
             if (env.IsDevelopment())
             {
@@ -142,18 +129,17 @@ namespace AuctionCars
                 app.UseHsts();
             }
 
-
+            app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseRouting();
             app.UseRequestLocalization();
-            
+
+            app.UseRouting();
+
             app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseHangfireServer();
             app.UseHangfireDashboard();
-
-            app.UseSession();
 
 
             app.UseEndpoints(endpoints =>
@@ -161,33 +147,6 @@ namespace AuctionCars
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Lots}/{action=Actual}/{id?}");
-                endpoints.MapControllerRoute(
-                    name: "Detail",
-                    pattern: "{controller=Lots}/{action=Detail}/{id?}",
-                    defaults: new {Controller = "Lots", Action = "Detail"}
-                    );
-                endpoints.MapControllerRoute(
-                    name: "Profile",
-                    pattern: "{controller=Account}/{action=Index}/{id?}");
-                endpoints.MapControllerRoute(
-                    name: "Users",
-                    pattern: "{controller=Users}/{action=Index}/{id?}");
-                endpoints.MapControllerRoute(
-                    name: "Add",
-                    pattern: "{controller=Users}/{action=CreateUser}/{id?}",
-                    defaults: new { Controller = "Users", Action = "CreateUser" });
-                endpoints.MapControllerRoute(
-                    name: "Logout",
-                    pattern: "{controller=Account}/{action=Logout}/{id?}");
-                endpoints.MapControllerRoute(
-                    name: "Create",
-                    pattern: "{controller=Lots}/{action=Create}",
-                    defaults: new { Controller = "Lots", Action = "Create" }
-                    );
-
-
-                endpoints.MapControllerRoute(name: "loadLots", pattern: "Lots/Load/{id:int?}", defaults: new { Controller = "Lots", Action = "Load"});
-                endpoints.MapControllerRoute(name: "actualLots", pattern: "Lots/Actual/{id:int?}", defaults: new { Controller = "Lots", Action = "Actual" });
                 endpoints.MapHub<UpdateHub>("/updates");
                 endpoints.MapControllers();
             });

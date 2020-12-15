@@ -25,29 +25,18 @@ namespace AuctionCars.Controllers
     public class LotsManagerController : Controller
     {
         private ApplicationContext db;
-        private UserManager<User> _userManager;
         private ILogger<LotsController> logger;
-        private IWebHostEnvironment _appEnviroment;
         private ICarLotsRepository carLotsRepository;
-        private ICarRepository carRepository;
-        private ILikesRepository likesRepository;
         private IBetPerository betRep;
-        private ICommentsRepository commRep;
-        private IHubContext<UpdateHub> updateHub;
-        const int pageSize = 4;
 
-        public LotsManagerController(ApplicationContext context, CarData carData, ILogger<LotsController> _logger, IHubContext<UpdateHub> _updateHub, UserManager<User> userManager, ICarRepository carRep, ICommentsRepository comm, IBetPerository rep, IWebHostEnvironment appEnviroment, ICarLotsRepository c, ILikesRepository l)
+
+        public LotsManagerController(ApplicationContext context, CarData carData, ILogger<LotsController> _logger, IBetPerository rep,  ICarLotsRepository c)
         {
             db = context;
-            _userManager = userManager;
-            _appEnviroment = appEnviroment;
             carLotsRepository = c;
-            likesRepository = l;
             betRep = rep;
-            commRep = comm;
-            carRepository = carRep;
             logger = _logger;
-            updateHub = _updateHub;
+
         }
 
         [HttpGet]

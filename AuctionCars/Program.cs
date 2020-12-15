@@ -22,25 +22,19 @@ namespace AuctionCars
         public static async Task Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
+            
 
-          
-
-            using (var scope = host.Services.CreateScope())
+            using (var scope = host.Services.CreateScope())  
             {
-                var services = scope.ServiceProvider;
-                var config = services.GetRequiredService<IConfiguration>();
+                var services = scope.ServiceProvider;    
                 try
                 {
                     Log.Logger = new LoggerConfiguration()
-                   .Enrich.FromLogContext()
-                   .WriteTo.File(config["AllLogs"])
-                   .WriteTo.Logger(lc => lc
-                   .Filter.ByIncludingOnly(le => le.Level == LogEventLevel.Verbose)
-                   .WriteTo.File(config["ErrorLogs"]))
-                   .WriteTo.Logger(lc => lc
-                   .Filter.ByIncludingOnly(le => le.Level == LogEventLevel.Error)
-                   .WriteTo.Console())
-                   .CreateLogger();
+                    .Enrich.FromLogContext()
+                    .WriteTo.File(path: "Logs\\AllLogs.txt", restrictedToMinimumLevel: LogEventLevel.Debug)
+                    .WriteTo.File(path: "Logs\\ErrorLogs.txt", restrictedToMinimumLevel: LogEventLevel.Error)
+                    .WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Debug)
+                    .CreateLogger();
 
                     var userManager = services.GetRequiredService<UserManager<User>>();
                     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
@@ -62,7 +56,7 @@ namespace AuctionCars
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
          Host.CreateDefaultBuilder(args)
-         .ConfigureAppConfiguration((ctx, builder) =>
+         .ConfigureAppConfiguration((context, builder) => 
          {
              var keyVaultEndpoint = GetKeyVaultEndpoint();
              if (!string.IsNullOrEmpty(keyVaultEndpoint))
@@ -76,7 +70,9 @@ namespace AuctionCars
          {
              webBuilder.UseStartup<Startup>();
          })
-         .UseSerilog();
-        private static string GetKeyVaultEndpoint() => Environment.GetEnvironmentVariable("VaultUri");
+         .UseSerilog(); //Uses Serilog instead of default .NET Logger
+
+
+        private static string GetKeyVaultEndpoint() => Environment.GetEnvironmentVariable("VaultUri");  //Извлекает значение переменной среды из текущего процесса.
     }
 }

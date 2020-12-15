@@ -39,34 +39,6 @@ namespace AuctionCars.Controllers
             Email = _Email;
         }
 
-        [AllowAnonymous]
-        [HttpGet] 
-        public async Task<IActionResult> LoginAsync(string returnUrl)
-         {
-
-            LoginViewModel model = new LoginViewModel
-            {
-                ReturnUrl = returnUrl,
-                ExtrernalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList()
-            };
-            return View(model);
-
-         }
-
-       
-
-        [AllowAnonymous]
-        [HttpPost]
-        public IActionResult ExternalLogin(string provider, string returnUrl)
-        {
-            var redirectUrl = Url.Action("ExternalLoginCallback", "Account",
-                                new { ReturnUrl = returnUrl });
-            var properties = _signInManager
-                .ConfigureExternalAuthenticationProperties(provider, redirectUrl);
-            return new ChallengeResult(provider, properties);
-        }
-
-
 
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
@@ -171,6 +143,33 @@ namespace AuctionCars.Controllers
         public IActionResult Message()
         {
             return View();
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<IActionResult> LoginAsync(string returnUrl)
+        {
+
+            LoginViewModel model = new LoginViewModel
+            {
+                ReturnUrl = returnUrl,
+                ExtrernalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList()
+            };
+            return View(model);
+
+        }
+
+
+
+        [AllowAnonymous]
+        [HttpPost]
+        public IActionResult ExternalLogin(string provider, string returnUrl)
+        {
+            var redirectUrl = Url.Action("ExternalLoginCallback", "Account",
+                                new { ReturnUrl = returnUrl });
+            var properties = _signInManager
+                .ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            return new ChallengeResult(provider, properties);
         }
 
 
