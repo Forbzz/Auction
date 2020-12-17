@@ -50,7 +50,7 @@ namespace AuctionCars
             services.AddTransient<ILikesRepository, LikesRepository>();
             services.AddTransient<ICarRepository, CarRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
-            services.AddTransient<IEmail, Email>();
+            services.AddScoped<IEmail, Email>();
             
 
             services.AddHangfire(x => x.UseSqlServerStorage(

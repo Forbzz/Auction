@@ -56,23 +56,13 @@ namespace AuctionCars
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
          Host.CreateDefaultBuilder(args)
-         .ConfigureAppConfiguration((context, builder) => 
-         {
-             var keyVaultEndpoint = GetKeyVaultEndpoint();
-             if (!string.IsNullOrEmpty(keyVaultEndpoint))
-             {
-                 var azureServiceTokenProvider = new AzureServiceTokenProvider();
-                 var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
-                 builder.AddAzureKeyVault(keyVaultEndpoint, keyVaultClient, new DefaultKeyVaultSecretManager());
-             }
-         })
          .ConfigureWebHostDefaults(webBuilder =>
          {
              webBuilder.UseStartup<Startup>();
          })
-         .UseSerilog(); //Uses Serilog instead of default .NET Logger
+         .UseSerilog(); 
 
 
-        private static string GetKeyVaultEndpoint() => Environment.GetEnvironmentVariable("VaultUri");  //Извлекает значение переменной среды из текущего процесса.
+        private static string GetKeyVaultEndpoint() => Environment.GetEnvironmentVariable("VaultUri");  
     }
 }
